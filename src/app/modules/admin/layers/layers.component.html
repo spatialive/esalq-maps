@@ -1,0 +1,26 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a [routerLink]="['/layers']" class="whitespace-nowrap text-primary-500">{{'layers' | transloco}}</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    {{'maps' | transloco}}
+                </h2>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-wrap items-center justify-around w-full p-6">
+        <ol-map class="object-cover" [lat]="-16.6958288" [lon]="-49.4443537" [zoom]="4.6" [width]="mapWidth" [height]="mapHeight">
+            <ol-control class="mobileHide" control="FullScreen"></ol-control>
+            <ol-layer *ngFor="let layer of layers" [layer]="layer"></ol-layer>
+        </ol-map>
+    </div>
+</div>

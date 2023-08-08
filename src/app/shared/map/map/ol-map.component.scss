@@ -1,0 +1,16 @@
+@import "src/styles/reponsive";
+
+:host ::ng-deep .ol-viewport {
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 50%);
+}
+
+@include media('>=phone', '<=tablet') {
+
+    :host ::ng-deep .map {
+        height: 100% !important;
+        width: 100%;
+        position: absolute;
+        padding-bottom: 100px;
+    }
+}

@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Upload Dataset</h1>
+<div mat-dialog-content>
+    <fuse-alert *ngIf="errorMsg"
+                class="mt-2"
+                [type]="'error'"
+                [appearance]="'outline'">
+        {{errorMsg}}
+    </fuse-alert>
+    <uploader
+        [config]="uploadConfig"
+        (apiResponse)="onUpload($event)">
+    </uploader>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="close()" cdkFocusInitial>
+        <mat-icon class="icon-size-5 mr-1" [svgIcon]="'heroicons_outline:x-circle'"></mat-icon>
+        Close
+    </button>
+</div>

@@ -1,0 +1,34 @@
+
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a [routerLink]="['/datasets']" class="whitespace-nowrap text-primary-500">Datasets</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Datasets submitted
+                </h2>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div class="mt-4 sm:mt-0">
+            <!-- Upload button -->
+            <button mat-raised-button color="accent" (click)="openUploader()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span>Add Dataset</span>
+            </button>
+        </div>
+    </div>
+    <div class="flex flex-wrap items-center justify-around w-full p-6">
+        <dataset-item *ngFor="let dataset of datasets" [dataset]="dataset"></dataset-item>
+    </div>
+</div>
+
+
