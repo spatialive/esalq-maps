@@ -1,9 +1,9 @@
 {
-    "name": "pgrass",
+    "name": "esalq-webmap",
     "version": "1.0.0",
-    "description": "pGrass - General Retrieval and Analysis and Series Platform",
-    "author": "Tharles de Sousa Andrade and Jairo Matos da Rocha",
-    "license": "https://github.com/lapig-ufg/pgrass-server/blob/main/client/LICENSE.md",
+    "description": "Esalq - Plataforma de Dados Geográficos",
+    "author": "Tharles de Sousa Andrade e Luiz Mário",
+    "license": "....",
     "private": true,
     "scripts": {
         "ng": "ng",
@@ -64,6 +64,7 @@
         "@typescript-eslint/eslint-plugin": "5.39.0",
         "@typescript-eslint/parser": "5.39.0",
         "autoprefixer": "10.4.12",
+        "chokidar-cli": "^3.0.0",
         "chroma-js": "2.4.2",
         "eslint": "8.24.0",
         "eslint-plugin-import": "2.26.0",

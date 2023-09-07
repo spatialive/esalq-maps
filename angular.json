@@ -9,7 +9,7 @@
     },
     "newProjectRoot": "projects",
     "projects": {
-        "pgrass": {
+        "esalq-webmap": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -23,7 +23,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/pgrass",
+                        "outputPath": "dist/esalq-webmap",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
@@ -109,10 +109,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "browserTarget": "pgrass:build:production"
+                            "browserTarget": "esalq-webmap:build:production"
                         },
                         "development": {
-                            "browserTarget": "pgrass:build:development",
+                            "browserTarget": "esalq-webmap:build:development",
                             "proxyConfig": "src/proxy.conf.js"
                         }
                     },
@@ -121,7 +121,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "pgrass:build"
+                        "browserTarget": "esalq-webmap:build"
                     }
                 },
                 "test": {
