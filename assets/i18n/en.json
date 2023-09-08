@@ -1,7 +1,9 @@
 {
-    "welcome-back": "Welcome back",
-    "Project": "Project",
-    "Analytics": "Analytics",
     "layers": "Layers",
-    "maps": "Maps"
+    "maps": "Maps",
+    "error_404_title": "Not found",
+    "error_404_msg": "The page you requested could not be found.",
+    "error_500_title": "Something went wrong!",
+    "error_500_msg": "Map server error. If the issue persists, please contact the platform administration.",
+    "back": "Go back to the homepage"
 }
