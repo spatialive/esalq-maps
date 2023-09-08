@@ -1,27 +1,37 @@
-# Esalq - Plataforma de Dados Geográficos
+# TEEB - Plataforma de Dados Geográficos
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli)
+Bem-vindo à TEEB - Plataforma de Dados Geográficos. Este projeto se dedica a apresentar dados geográficos relacionados a agricultura, pastagem, vegetação nativa, desmatamento e regeneração da vegetação de 2020 a 2030.
 
-## Development server
+![Imagem Destaque](URL_DA_IMAGEM_DE_DESTAQUE)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Recursos
 
-## Code scaffolding
+- **Agricultura (ha)**
+- **Pastagem (ha)**
+- **Vegetação Nativa (ha)**
+- **Pastagem Degradada (ha)**
+- **Pastagem Sem Degradação (ha)**
+- **Recuperação de Pastagem Degradada (ha)**
+- **Integração Lavoura-Pecuária (ha)**
+- **Desmatamento 2020-2030 (ha)**
+- **Regeneração da Vegetação Nativa 2020-2030 (ha)**
+- **Vegetação Nativa Mantida 2020-2030 (ha)**
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Como usar
 
-## Build
+1. Navegue até a plataforma através do [link](URL_DA_SUA_PÁGINA).
+2. Selecione os filtros desejados.
+3. Explore os dados geográficos disponíveis.
+4. (Insira mais passos se necessário).
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Contribuições
 
-## Running unit tests
+Contribuições são bem-vindas! Por favor, leia o guia de contribuições e o código de conduta antes de enviar sua solicitação pull.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Licença
 
-## Running end-to-end tests
+Este projeto está sob a licença XYZ. Veja o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice.  To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Contato
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Para dúvidas, sugestões ou feedbacks, entre em contato conosco através do [email@email.com](mailto:email@email.com).
