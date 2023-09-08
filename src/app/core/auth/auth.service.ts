@@ -9,7 +9,7 @@ import {SocialUser} from '@abacritt/angularx-social-login';
 @Injectable()
 export class AuthService {
     private _authenticated: boolean = false;
-    private _apiUrl: string = environment.apiUrl;
+    private _apiUrl: string = '';
 
     /**
      * Constructor

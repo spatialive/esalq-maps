@@ -16,7 +16,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {Collection} from './layers.types';
 import {WmsService} from '../../../shared/wms/wms.service';
 import {ActivatedRoute} from '@angular/router';
-import {CapabilitiesState} from '../../../shared/state/capabilities.state';
 
 @Component({
     selector: 'layers',
@@ -42,7 +41,6 @@ export class LayersComponent implements OnInit, AfterViewInit {
         public readonly dialog: MatDialog,
         private readonly wmsService: WmsService,
         private readonly route: ActivatedRoute,
-        private readonly capabilitiesState: CapabilitiesState
     ) {
         this.layers = [
             new TileLayer({
@@ -70,8 +68,6 @@ export class LayersComponent implements OnInit, AfterViewInit {
     }
     ngOnInit(): void {
         const capabilities = this.route.snapshot.data['capabilities'];
-        console.log(capabilities);
-        this.capabilitiesState.setState(capabilities);
     }
     ngAfterViewInit(): void {
         this.setDimensions();

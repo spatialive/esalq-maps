@@ -4,7 +4,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { ShortcutsService } from 'app/layout/common/shortcuts/shortcuts.service';
 import {UserService} from 'app/core/user/user.service';
-import {DatasetsService} from './modules/admin/datasets/datasets.service';
+import {WmsService} from "./shared/wms/wms.service";
 
 @Injectable({
     providedIn: 'root'
@@ -17,8 +17,7 @@ export class InitialDataResolver implements Resolve<any>
     constructor(
         private _navigationService: NavigationService,
         private _shortcutsService: ShortcutsService,
-        private _userService: UserService,
-        private _datasetService: DatasetsService,
+        private _wmsService: WmsService,
     )
     {
     }
@@ -39,6 +38,7 @@ export class InitialDataResolver implements Resolve<any>
         return forkJoin([
             this._navigationService.get(),
             this._shortcutsService.getAll(),
+            this._wmsService.get()
             // this._userService.get(),
             // this._datasetService.get()
         ]);

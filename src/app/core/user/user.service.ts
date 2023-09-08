@@ -10,7 +10,7 @@ import {AuthUtils} from 'app/core/auth/auth.utils';
 })
 export class UserService {
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
-    private _apiUrl: string = environment.apiUrl;
+    private _apiUrl: string = '';
 
     /**
      * Constructor

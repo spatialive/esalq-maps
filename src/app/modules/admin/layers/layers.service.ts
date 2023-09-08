@@ -9,7 +9,7 @@ import {Feature} from './layers.types';
 })
 export class LayersService {
     private _features: ReplaySubject<Feature[]> = new ReplaySubject<Feature[]>();
-    private _apiUrl: string = environment.apiUrl + '/api/features';
+    private _apiUrl: string = '/api/features';
 
     /**
      * Constructor
@@ -42,7 +42,7 @@ export class LayersService {
      * Get get all datasets by username
      */
     get(): Observable<Feature[]> {
-        return this._httpClient.get<Feature[]>(`${environment.apiUrl}/`).pipe(
+        return this._httpClient.get<Feature[]>('/').pipe(
             tap((features) => {
                 this._features.next(features);
             })
