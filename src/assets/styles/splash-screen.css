@@ -8,7 +8,7 @@ body fuse-splash-screen {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #111827;
+    background-color: #194c2c;
     color: #F9FAFB;
     z-index: 999999;
     pointer-events: none;
@@ -33,11 +33,23 @@ body fuse-splash-screen .spinner {
 body fuse-splash-screen .spinner > div {
     width: 12px;
     height: 12px;
-    background-color: #1E96F7;
     border-radius: 100%;
     display: inline-block;
     -webkit-animation: fuse-bouncedelay 1s infinite ease-in-out both;
     animation: fuse-bouncedelay 1s infinite ease-in-out both;
+}
+
+body fuse-splash-screen .spinner .bounce1{
+    background-color: #8c161a !important;
+}
+body fuse-splash-screen .spinner .bounce2{
+    background-color: #317eb8 !important;
+}
+body fuse-splash-screen .spinner .bounce3{
+    background-color: #2b287d !important;
+}
+body fuse-splash-screen .spinner .bounce4{
+    background-color: #e7aa2d !important;
 }
 
 body fuse-splash-screen .spinner .bounce1 {

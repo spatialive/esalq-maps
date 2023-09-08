@@ -14,7 +14,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {UploaderModule} from '../../../core/uploader/uploader.module';
 import {UploadDatasetDialogComponent} from './upload-dataset-dialog/upload-dataset-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
-import {FuseAlertModule} from "../../../../@fuse/components/alert";
+import {FuseAlertModule} from '../../../../@fuse/components/alert';
 const datasetRoutes: Route[] = [
     {
         path     : '',

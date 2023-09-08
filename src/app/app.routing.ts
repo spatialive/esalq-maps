@@ -4,6 +4,7 @@ import {NoAuthGuard} from 'app/core/auth/guards/noAuth.guard';
 import {LayoutComponent} from 'app/layout/layout.component';
 import {InitialDataResolver} from 'app/app.resolvers';
 import {LayersResolver} from 'app/modules/admin/layers/layers.resolver';
+import {WMSCapabilitiesResolver} from "./shared/resolvers/wms-capabilities.resolver";
 // @formatter:off
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
@@ -60,7 +61,7 @@ export const appRoutes: Route[] = [
         path: '',
         component: LayoutComponent,
         resolve: {
-            initialData: InitialDataResolver,
+            initialData: InitialDataResolver
         },
         children: [
             {

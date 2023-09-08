@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import { Route, RouterModule } from '@angular/router';
+import {Route, RouterModule } from '@angular/router';
 import {LayersComponent} from './layers.component';
 import {OlMapsModule} from '../../../shared/map/ol-maps.module';
 import {TranslocoModule} from '@ngneat/transloco';
@@ -14,16 +14,21 @@ import {UploaderModule} from '../../../core/uploader/uploader.module';
 import {MatDialogModule} from '@angular/material/dialog';
 import {FuseAlertModule} from '../../../../@fuse/components/alert';
 import {NgApexchartsModule} from 'ng-apexcharts';
+import {WMSCapabilitiesResolver} from '../../../shared/resolvers/wms-capabilities.resolver';
+
 const datasetRoutes: Route[] = [
     {
         path     : '',
         component: LayersComponent,
+        resolve: {
+            capabilities: WMSCapabilitiesResolver
+        },
     },
 ];
 
 @NgModule({
     declarations: [
-        LayersComponent,
+        LayersComponent
     ],
     imports: [
         CommonModule,
@@ -42,9 +47,8 @@ const datasetRoutes: Route[] = [
         NgApexchartsModule
     ],
     exports: [
-        LayersComponent,
+        LayersComponent
     ]
 })
-export class LayersModule
-{
-}
+
+export class LayersModule {}

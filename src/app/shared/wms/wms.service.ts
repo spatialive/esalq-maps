@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {LayerWms} from './layer-wms.model';
-import {Observable, ReplaySubject} from 'rxjs';
+import {catchError, map, Observable, of, ReplaySubject} from 'rxjs';
 import WMSCapabilities from 'ol/format/WMSCapabilities';
+
 @Injectable({
     providedIn: 'root'
 })
@@ -29,14 +30,24 @@ export class WmsService {
         // Store the value
         this._layers.next(value);
     }
-    get(): Observable<string> {
-        return this._http.get(`${this.wmsUrl}?service=wms&version=1.1.1&request=GetCapabilities`, { responseType: 'text' });
+    get(): Observable<any[]> {
+        return this._http.get(`${this.wmsUrl}?service=wms&version=1.1.1&request=GetCapabilities`, { responseType: 'text' })
+            .pipe(
+                map(value => this.parseWMSCapabilities(value)),
+                catchError(() => of([]))
+            );
     }
-    public getLayers(layer: any, url: string): LayerWms[] {
-        return layer.Layer.map((lay: LayerWms) => new LayerWms(lay, this.getLayers(lay, url), url));
-    }
-    public parseWMSCapabilities(response: string): WMSCapabilities {
+    parseWMSCapabilities(response: string): any {
         const parser: WMSCapabilities = new WMSCapabilities();
-        return  parser.read(response);
+        const parsedResult = parser.read(response);
+        const layersArray = parsedResult?.Capability?.Layer.Layer;
+
+        let layers = [];
+
+        if (Array.isArray(layersArray)) {
+            layers = layersArray.filter(lay => lay.Name.includes('teeb:'));
+        }
+        return layers;
     }
 }
+

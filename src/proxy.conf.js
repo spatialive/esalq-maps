@@ -2,7 +2,7 @@ const proxy = [
     {
         context: ['/geoservico'],
         // target: 'http://siscom.ibama.gov.br',
-        target: 'http://geo.sema.mt.gov.br',
+        target: 'http://34.71.4.88:3000',
         pathRewrite: {'^/geoservico' : ''},
         secure: true,
         logLevel: 'debug',

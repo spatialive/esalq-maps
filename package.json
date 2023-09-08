@@ -1,7 +1,7 @@
 {
-    "name": "esalq-webmap",
+    "name": "teeb-webmap",
     "version": "1.0.0",
-    "description": "Esalq - Plataforma de Dados Geográficos",
+    "description": "TEEB - Maps",
     "author": "Tharles de Sousa Andrade e Luiz Mário",
     "license": "....",
     "private": true,

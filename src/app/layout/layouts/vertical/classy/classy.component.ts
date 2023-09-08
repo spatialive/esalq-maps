@@ -53,8 +53,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Subscribe to navigation data
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -73,7 +72,6 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(({matchingAliases}) => {
-
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });

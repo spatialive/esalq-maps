@@ -1,3 +1,5 @@
-<div id="{{target}}" [ngStyle]="{'width': _width, 'height': _height}" class="map">
-  <ng-content></ng-content>
+<div *ngIf="_height !== 0 && _width !== 0" class="map-container">
+    <div id="{{target}}" class="map" [ngStyle]="{'width': _width, 'height': _height}" >
+        <ng-content></ng-content>
+    </div>
 </div>

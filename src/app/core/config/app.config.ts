@@ -7,7 +7,7 @@ export type Theme = 'theme-default' | string;
 export type Themes = { id: string; name: string }[];
 
 /**
- * AppConfig interface. Update this interface to strictly type your config
+ * AppConfig interfaces. Update this interfaces to strictly type your config
  * object.
  */
 export interface AppConfig

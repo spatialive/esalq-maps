@@ -7,7 +7,7 @@ import {
     Output,
     EventEmitter,
     ChangeDetectorRef,
-    HostListener, OnChanges, SimpleChanges
+    HostListener, OnChanges, SimpleChanges, OnDestroy
 } from '@angular/core';
 import 'ol/ol.css';
 import Map from 'ol/Map';
@@ -27,7 +27,7 @@ export const DEFAULT_LON = -58.382037891217465;
     templateUrl: './ol-map.component.html',
     styleUrls: ['./ol-map.component.scss']
 })
-export class OlMapComponent implements OnInit, AfterViewInit, OnChanges {
+export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
     @Input() lat: number = DEFAULT_LAT;
     @Input() lon: number = DEFAULT_LON;
@@ -51,6 +51,7 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges {
         } else {
             this._width = DEFAULT_WIDTH;
         }
+        this.updateMapSize();
     };
 
     @Input() set height(value: number) {
@@ -60,6 +61,7 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges {
         } else {
             this._height = DEFAULT_HEIGHT;
         }
+        this.updateMapSize();
     };
 
     @HostListener('window:resize', ['$event'])
@@ -93,6 +95,9 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges {
         setTimeout(() => {
             this.ready.emit(this.map);
         });
+    }
+    updateMapSize(): void {
+        this.map?.updateSize();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -134,6 +139,8 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges {
             return '';
         }
         return cssUnitsPattern.test(value) ? value : `${value}px`;
+    }
+    ngOnDestroy(): void {
     }
 }
 

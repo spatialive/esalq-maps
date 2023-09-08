@@ -1,11 +1,22 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import TileLayer from 'ol/layer/Tile';
 import {XYZ} from 'ol/source';
-import {Subject, takeUntil} from 'rxjs';
+import {Subject} from 'rxjs';
 import {LayersService} from './layers.service';
 import {MatDialog} from '@angular/material/dialog';
 import {Collection} from './layers.types';
-import {WmsService} from "../../../shared/wms/wms.service";
+import {WmsService} from '../../../shared/wms/wms.service';
+import {ActivatedRoute} from '@angular/router';
+import {CapabilitiesState} from '../../../shared/state/capabilities.state';
 
 @Component({
     selector: 'layers',
@@ -13,19 +24,25 @@ import {WmsService} from "../../../shared/wms/wms.service";
     styleUrls: ['./layers.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class LayersComponent implements OnInit {
+export class LayersComponent implements OnInit, AfterViewInit {
+    @ViewChild('containerMap') containerMap: ElementRef;
+
     public layers: any[] = [];
     public collections: Collection[] = [];
-    protected mapWidth: number = 200;
-    protected mapHeight: number = 500;
+
+    protected mapWidth: number;
+    protected mapHeight: number;
     private unsubscribeAll: Subject<any> = new Subject<any>();
     /**
      * Constructor
      */
     constructor(
-        private layersService: LayersService,
-        public dialog: MatDialog,
-        private readonly wmsService: WmsService
+        private readonly cdr: ChangeDetectorRef,
+        private readonly layersService: LayersService,
+        public readonly dialog: MatDialog,
+        private readonly wmsService: WmsService,
+        private readonly route: ActivatedRoute,
+        private readonly capabilitiesState: CapabilitiesState
     ) {
         this.layers = [
             new TileLayer({
@@ -44,19 +61,19 @@ export class LayersComponent implements OnInit {
             })
         ];
     }
-
-    ngOnInit(): void {
-        this.loadCollections();
-        this.mapWidth = window.innerWidth - 320;
-        this.mapHeight = window.innerHeight - 320;
-        this.wmsService.get().subscribe({
-            next: (value) => {
-                const parse = this.wmsService.parseWMSCapabilities(value);
-                console.log(parse);
-            }
-        });
+    @HostListener('window:resize', ['$event'])
+    setDimensions(): void {
+        const containerMapDimensions = this.containerMap.nativeElement.getBoundingClientRect();
+        this.mapWidth = containerMapDimensions.width < 300 ? 300 : containerMapDimensions.width - 20;
+        this.mapHeight = containerMapDimensions.height - 70;
+        this.cdr.detectChanges();
     }
-
-    loadCollections(): void {
+    ngOnInit(): void {
+        const capabilities = this.route.snapshot.data['capabilities'];
+        console.log(capabilities);
+        this.capabilitiesState.setState(capabilities);
+    }
+    ngAfterViewInit(): void {
+        this.setDimensions();
     }
 }

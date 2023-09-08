@@ -4,11 +4,10 @@ export class LayerWms {
     queryable: boolean;
     url: string;
     layers: LayerWms[];
-    constructor(layer: any, layers: LayerWms[], url: string) {
+    constructor(layer: any, layers: LayerWms[]) {
        this.name = layer?.name;
        this.title = layer?.title;
        this.queryable = layer?.queryable;
        this.layers = layers;
-       this.url = url;
     }
 }
