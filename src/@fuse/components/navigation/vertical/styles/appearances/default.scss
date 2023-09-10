@@ -232,7 +232,7 @@ fuse-vertical-navigation {
                 text-decoration: none;
                 border-radius: 6px;
 
-                /* Disabled state */
+                /* Disabled states */
                 &.fuse-vertical-navigation-item-disabled {
                     cursor: default;
                     opacity: 0.4;
@@ -507,7 +507,7 @@ fuse-vertical-navigation-collapsable-item {
 
         .fuse-vertical-navigation-item {
 
-            /* Active state */
+            /* Active states */
             &:not(.fuse-vertical-navigation-item-disabled) {
 
                 &.fuse-vertical-navigation-item-active,
@@ -528,7 +528,7 @@ fuse-vertical-navigation-collapsable-item {
                 }
             }
 
-            /* Hover state */
+            /* Hover states */
             &:not(.fuse-vertical-navigation-item-active-forced):not(.fuse-vertical-navigation-item-active):not(.fuse-vertical-navigation-item-disabled) {
 
                 &:hover {
@@ -555,7 +555,7 @@ fuse-vertical-navigation-collapsable-item {
 /* Collapsable */
 fuse-vertical-navigation-collapsable-item {
 
-    /* Expanded state */
+    /* Expanded states */
     &.fuse-vertical-navigation-item-expanded {
 
         > .fuse-vertical-navigation-item-wrapper {

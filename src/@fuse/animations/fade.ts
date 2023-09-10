@@ -18,7 +18,7 @@ const fadeIn = trigger('fadeIn',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -51,7 +51,7 @@ const fadeInTop = trigger('fadeInTop',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -84,7 +84,7 @@ const fadeInBottom = trigger('fadeInBottom',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -117,7 +117,7 @@ const fadeInLeft = trigger('fadeInLeft',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -150,7 +150,7 @@ const fadeInRight = trigger('fadeInRight',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -181,7 +181,7 @@ const fadeOut = trigger('fadeOut',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -214,7 +214,7 @@ const fadeOutTop = trigger('fadeOutTop',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -247,7 +247,7 @@ const fadeOutBottom = trigger('fadeOutBottom',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -280,7 +280,7 @@ const fadeOutLeft = trigger('fadeOutLeft',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -313,7 +313,7 @@ const fadeOutRight = trigger('fadeOutRight',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition

@@ -21,7 +21,7 @@ const zoomIn = trigger('zoomIn',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -55,7 +55,7 @@ const zoomOut = trigger('zoomOut',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition

@@ -8,6 +8,7 @@ export interface Layer {
     queryable: boolean;
     opaque: boolean;
     noSubsets: boolean;
+    visible?: boolean;
 }
 export interface BoundingBox {
     crs: any;

@@ -44,7 +44,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
 
             // Get the active lang
             this.activeLang = activeLang;
-
+            localStorage.setItem('userLang', activeLang);
             // Update the navigation
             this._updateNavigation(activeLang);
         });
@@ -129,7 +129,6 @@ export class LanguagesComponent implements OnInit, OnDestroy
 
                     // Set the title
                     projectDashboardItem.title = translation;
-
                     // Refresh the navigation component
                     navComponent.refresh();
                 });

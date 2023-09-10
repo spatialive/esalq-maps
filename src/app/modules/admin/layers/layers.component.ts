@@ -3,45 +3,58 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
-    HostListener,
+    HostListener, OnDestroy,
     OnInit,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import TileLayer from 'ol/layer/Tile';
-import {XYZ} from 'ol/source';
-import {Subject} from 'rxjs';
-import {LayersService} from './layers.service';
-import {MatDialog} from '@angular/material/dialog';
-import {Collection} from './layers.types';
-import {WmsService} from '../../../shared/wms/wms.service';
-import {ActivatedRoute} from '@angular/router';
-
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {XYZ, TileWMS} from 'ol/source';
+import {Subject, take, takeUntil} from 'rxjs';
+import {
+    BiomesService,
+    LayersService,
+    LimitsService,
+    MunicipalitiesService,
+    StatesService
+} from '../../../shared/services';
+import {CountryService} from '../../../shared/services';
+import Map from 'ol/Map';
+import {Layer} from '../../../shared/interfaces';
+import {environment} from '../../../../environments/environment';
 @Component({
     selector: 'layers',
     templateUrl: './layers.component.html',
     styleUrls: ['./layers.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class LayersComponent implements OnInit, AfterViewInit {
+export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('containerMap') containerMap: ElementRef;
 
     public layers: any[] = [];
-    public collections: Collection[] = [];
+    public map: Map;
+    public extentOptions: any;
 
     protected mapWidth: number;
     protected mapHeight: number;
     private unsubscribeAll: Subject<any> = new Subject<any>();
+    private lays: Layer[] = [];
+    private limits: Layer[] = [];
     /**
      * Constructor
      */
     constructor(
         private readonly cdr: ChangeDetectorRef,
         private readonly layersService: LayersService,
-        public readonly dialog: MatDialog,
-        private readonly wmsService: WmsService,
-        private readonly route: ActivatedRoute,
+        private readonly limitsService: LimitsService,
+        private readonly countryService: CountryService,
+        private readonly biomesService: BiomesService,
+        private readonly statesService: StatesService,
+        private readonly municipalitiesService: MunicipalitiesService
     ) {
+        this.extentOptions = {
+            extent: [-12273952.2539,-4285365.5538,176110.9132,269058.3396]
+        };
         this.layers = [
             new TileLayer({
                 properties: {
@@ -61,15 +74,113 @@ export class LayersComponent implements OnInit, AfterViewInit {
     }
     @HostListener('window:resize', ['$event'])
     setDimensions(): void {
-        const containerMapDimensions = this.containerMap.nativeElement.getBoundingClientRect();
+        const containerMapDimensions = this.containerMap?.nativeElement.getBoundingClientRect();
+        if(!containerMapDimensions){
+            return;
+        }
         this.mapWidth = containerMapDimensions.width < 300 ? 300 : containerMapDimensions.width - 20;
         this.mapHeight = containerMapDimensions.height - 70;
+        // console.log(containerMapDimensions, this.mapWidth, this.mapHeight);
         this.cdr.detectChanges();
     }
     ngOnInit(): void {
-        const capabilities = this.route.snapshot.data['capabilities'];
+       // setTimeout(this.setDimensions, 900);
+    }
+    subscriptions(): void{
+        this.layersService.layers$
+            .pipe(take(1))
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                   this.limitsService.get(layers);
+                   layers = layers.filter(lay => !lay.Name.includes('teeb:camada_'));
+                   const limits = layers.filter(lay => lay.Name.includes('teeb:camada_'));
+                   this.lays = layers;
+                   this.limits = limits;
+                }
+            });
+        this.layersService.layers$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    this.handleLayers(layers);
+                }
+            });
+    }
+    handleLayers(layers: Layer[]): void {
+        if(Array.isArray(layers)){
+            if (this.map) {
+                layers.forEach((lay: Layer) => {
+                    this.update(lay.Name, lay.visible);
+                });
+            }
+        }
+    }
+    addLayers(layers: Layer[]): void {
+        if (Array.isArray(layers)) {
+            layers.forEach((lay) => {
+                const tileLayer: TileLayer<TileWMS> = new TileLayer({
+                    visible: lay.visible,
+                    source: new TileWMS({
+                        url: `${environment.geoserverUrl}/geoserver/wms`,
+                        params: {
+                            version: '1.1.1',
+                            tiled: true,
+                            layers: lay.Name
+                        }
+                    }),
+                    properties: {
+                        title: lay.Name,
+                        key: 'layer',
+                        type: 'raster',
+                    },
+                });
+                this.layers.push(tileLayer);
+            });
+        }
+    }
+    addLimits(limits: Layer[]): void {
+        if (Array.isArray(limits)) {
+            limits.forEach((lay) => {
+                const tileLayer: TileLayer<TileWMS> = new TileLayer({
+                    visible: lay.visible,
+                    source: new TileWMS({
+                        url: `${environment.geoserverUrl}/geoserver/wms`,
+                        params: {
+                            version: '1.1.1',
+                            tiled: true,
+                            layers: lay.Name
+                        }
+                    }),
+                    properties: {
+                        title: lay.Name,
+                        key: 'limit',
+                        type: 'vector',
+                    },
+                });
+                this.layers.push(tileLayer);
+            });
+        }
+    }
+
+    update(name: string, visible: boolean = false): void {
+        const layer = this.map.getLayers().getArray().find(baseLayer => baseLayer.get('title') === name);
+        if (layer) {
+            console.log(visible);
+            layer.setVisible(visible);
+        }
     }
     ngAfterViewInit(): void {
         this.setDimensions();
+        this.subscriptions();
+    }
+    onMapReady(map: Map): void {
+        this.map = map;
+        this.addLayers(this.lays);
+        this.addLimits(this.limits);
+    }
+    ngOnDestroy(): void {
+        this.unsubscribeAll.next(null);
+        this.unsubscribeAll.complete();
     }
 }

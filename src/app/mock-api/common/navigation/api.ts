@@ -1,23 +1,26 @@
 import { Injectable } from '@angular/core';
-import { cloneDeep } from 'lodash-es';
 import { FuseNavigationItem } from '@fuse/components/navigation';
 import { FuseMockApiService } from '@fuse/lib/mock-api';
-import { compactNavigation, defaultNavigation, futuristicNavigation, horizontalNavigation } from 'app/mock-api/common/navigation/data';
+import {LayersService} from '../../../shared/services/layers.service';
+import {take} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
 })
 export class NavigationMockApi
 {
-    private readonly _compactNavigation: FuseNavigationItem[] = compactNavigation;
-    private readonly _defaultNavigation: FuseNavigationItem[] = defaultNavigation;
-    private readonly _futuristicNavigation: FuseNavigationItem[] = futuristicNavigation;
-    private readonly _horizontalNavigation: FuseNavigationItem[] = horizontalNavigation;
+    private _compactNavigation: FuseNavigationItem[] = [];
+    private _defaultNavigation: FuseNavigationItem[] = [];
+    private _futuristicNavigation: FuseNavigationItem[] = [];
+    private _horizontalNavigation: FuseNavigationItem[] = [];
 
     /**
      * Constructor
      */
-    constructor(private _fuseMockApiService: FuseMockApiService)
+    constructor(
+        private readonly _fuseMockApiService: FuseMockApiService,
+        private readonly layersService: LayersService
+    )
     {
         // Register Mock API handlers
         this.registerHandlers();
@@ -30,56 +33,63 @@ export class NavigationMockApi
     /**
      * Register Mock API handlers
      */
-    registerHandlers(): void
-    {
+    registerHandlers(): void {
         // -----------------------------------------------------------------------------------------------------
         // @ Navigation - GET
         // -----------------------------------------------------------------------------------------------------
 
+        this._compactNavigation = [];
+        this._futuristicNavigation = [];
+        this._defaultNavigation = [];
+        this._horizontalNavigation = [];
         this._fuseMockApiService
             .onGet('api/common/navigation')
             .reply(() => {
+                this.layersService.layers$.pipe(take(1)).subscribe({
+                    next: (layers) => {
+                        if (Array.isArray(layers)) {
+                            layers = layers.filter(l => !l.Name.includes('teeb:camada_'));
+                            layers.forEach((lay) => {
 
-                // Fill compact navigation children using the default navigation
-                this._compactNavigation.forEach((compactNavItem) => {
-                    this._defaultNavigation.forEach((defaultNavItem) => {
-                        if ( defaultNavItem.id === compactNavItem.id )
-                        {
-                            compactNavItem.children = cloneDeep(defaultNavItem.children);
+                                const navigationItem = {
+                                    active: false,
+                                    id: lay.Name,
+                                    title: lay.Title.toUpperCase(),
+                                    type: 'basic',
+                                    icon: 'mat_solid:layers',
+                                    function: (item: FuseNavigationItem): void => {
+                                        item.active = !item.active;
+                                        item.badge = item.active ? {icon: 'heroicons_outline:check'} : null;
+                                        this.layersService.updateLayerVisibility(item.id, item.active);
+                                    }
+                                };
+
+                                this.updateOrPush(this._compactNavigation, navigationItem);
+                                this.updateOrPush(this._futuristicNavigation, navigationItem);
+                                this.updateOrPush(this._defaultNavigation, navigationItem);
+                                this.updateOrPush(this._horizontalNavigation, navigationItem);
+
+                            });
                         }
-                    });
+                    }
                 });
-
-                // Fill futuristic navigation children using the default navigation
-                this._futuristicNavigation.forEach((futuristicNavItem) => {
-                    this._defaultNavigation.forEach((defaultNavItem) => {
-                        if ( defaultNavItem.id === futuristicNavItem.id )
-                        {
-                            futuristicNavItem.children = cloneDeep(defaultNavItem.children);
-                        }
-                    });
-                });
-
-                // Fill horizontal navigation children using the default navigation
-                this._horizontalNavigation.forEach((horizontalNavItem) => {
-                    this._defaultNavigation.forEach((defaultNavItem) => {
-                        if ( defaultNavItem.id === horizontalNavItem.id )
-                        {
-                            horizontalNavItem.children = cloneDeep(defaultNavItem.children);
-                        }
-                    });
-                });
-
-                // Return the response
                 return [
                     200,
                     {
-                        compact   : cloneDeep(this._compactNavigation),
-                        default   : cloneDeep(this._defaultNavigation),
-                        futuristic: cloneDeep(this._futuristicNavigation),
-                        horizontal: cloneDeep(this._horizontalNavigation)
+                        compact   : this._compactNavigation,
+                        default   : this._defaultNavigation,
+                        futuristic: this._futuristicNavigation,
+                        horizontal: this._horizontalNavigation
                     }
                 ];
             });
+    }
+    updateOrPush(targetArray: any[], newItem: any): void {
+        const index = targetArray.findIndex(item => item.id === newItem.id);
+        if (index !== -1) {
+            targetArray[index] = newItem;
+        } else {
+            targetArray.push(newItem);
+        }
     }
 }

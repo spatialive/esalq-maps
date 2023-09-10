@@ -5,5 +5,7 @@
     "error_404_msg": "A página que você solicitou não pôde ser encontrada.",
     "error_500_title": "Ocorreu um erro!",
     "error_500_msg": "Erro no servidor de mapas. Caso o erro persista, por favor, entre em contato com a administração da plataforma.",
-    "back": "Voltar para página principal."
+    "back": "Voltar para página principal.",
+    "no_results": "Nenhum resultado encontrado!",
+    "search_placeholder": "Pesquisar ..."
 }

@@ -16,7 +16,7 @@ const expandCollapse = trigger('expandCollapse',
             style('*')
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void <=> false, collapsed <=> false, expanded <=> false', []),
 
         // Transition

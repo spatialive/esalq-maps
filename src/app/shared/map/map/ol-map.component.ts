@@ -14,6 +14,9 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import {defaults as defaultInteractions} from 'ol/interaction';
 import * as Proj from 'ol/proj';
+import proj4 from 'proj4';
+import {register} from 'ol/proj/proj4';
+import {fromLonLat, get as getProjection, getPointResolution, Projection, toLonLat} from 'ol/proj';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
 
 export const DEFAULT_WIDTH = '100%';
@@ -39,10 +42,14 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     public _height: number | string;
     map: Map;
     private mapEl: HTMLElement;
+    private projection: Projection;
+    private readonly extent: Array<number> = [-100.546875,-46.073231,-4.570313,17.644022];
 
-    constructor(private elementRef: ElementRef, private cdRef: ChangeDetectorRef, private fuseLoadingService: FuseLoadingService) {
-
-    }
+    constructor(
+        private elementRef: ElementRef,
+        private cdRef: ChangeDetectorRef,
+        private fuseLoadingService: FuseLoadingService
+    ) {}
 
     @Input() set width(value: number) {
         if (value) {
@@ -77,13 +84,34 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         const self = this;
         this.mapEl = this.elementRef.nativeElement.querySelector('#' + this.target);
         this.setSize();
+
+        proj4.defs('EPSG:4674', '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs');
+        register(proj4);
+
+        const wordExtent: Array<number> = [-180, -90, 180, 90];
+
+        getProjection('EPSG:4674').setExtent(this.extent);
+        getProjection('EPSG:4674').setWorldExtent(wordExtent);
+
+        this.projection = new Projection({
+            code: 'EPSG:4674',
+            units: 'm',
+            extent: this.extent,
+            worldExtent: wordExtent
+        });
+        const view: View = new View({
+            center: fromLonLat([this.lon,this.lat], this.projection.getCode()),
+            zoom: this.zoom,
+            minZoom: 2,
+            maxZoom: 20,
+            extent: this.extent,
+            projection: this.projection
+        });
+
         this.map = new Map({
             target: this.target,
             interactions: defaultInteractions({altShiftDragRotate: false, pinchRotate: false}),
-            view: new View({
-                center: Proj.fromLonLat([this.lon, this.lat]),
-                zoom: this.zoom
-            })
+            view: view
         });
         this.map.on('loadstart', () => {
             self.fuseLoadingService.show();

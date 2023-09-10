@@ -18,7 +18,7 @@ const slideInTop = trigger('slideInTop',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -49,7 +49,7 @@ const slideInBottom = trigger('slideInBottom',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -80,7 +80,7 @@ const slideInLeft = trigger('slideInLeft',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -111,7 +111,7 @@ const slideInRight = trigger('slideInRight',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition
@@ -142,7 +142,7 @@ const slideOutTop = trigger('slideOutTop',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -173,7 +173,7 @@ const slideOutBottom = trigger('slideOutBottom',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -204,7 +204,7 @@ const slideOutLeft = trigger('slideOutLeft',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition
@@ -235,7 +235,7 @@ const slideOutRight = trigger('slideOutRight',
             })
         ),
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('false => void', []),
 
         // Transition

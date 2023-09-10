@@ -12,9 +12,7 @@ export class FuseNavigationService
     /**
      * Constructor
      */
-    constructor()
-    {
-    }
+    constructor() {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -97,25 +95,19 @@ export class FuseNavigationService
      * @param navigation
      * @param flatNavigation
      */
-    getFlatNavigation(navigation: FuseNavigationItem[], flatNavigation: FuseNavigationItem[] = []): FuseNavigationItem[]
-    {
-        for ( const item of navigation )
-        {
-            if ( item.type === 'basic' )
-            {
+    getFlatNavigation(navigation: FuseNavigationItem[], flatNavigation: FuseNavigationItem[] = []): FuseNavigationItem[] {
+        for ( const item of navigation ) {
+            if ( item.type === 'basic' ) {
                 flatNavigation.push(item);
                 continue;
             }
 
-            if ( item.type === 'aside' || item.type === 'collapsable' || item.type === 'group' )
-            {
-                if ( item.children )
-                {
+            if ( item.type === 'aside' || item.type === 'collapsable' || item.type === 'group' ) {
+                if ( item.children ) {
                     this.getFlatNavigation(item.children, flatNavigation);
                 }
             }
         }
-
         return flatNavigation;
     }
 

@@ -1,7 +1,16 @@
-import { Translation, TRANSLOCO_CONFIG, TRANSLOCO_LOADER, translocoConfig, TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import {
+    getBrowserLang,
+    Translation,
+    TRANSLOCO_CONFIG,
+    TRANSLOCO_LOADER,
+    translocoConfig,
+    TranslocoModule,
+    TranslocoService
+} from '@ngneat/transloco';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { environment } from 'environments/environment';
 import { TranslocoHttpLoader } from 'app/core/transloco/transloco.http-loader';
+import {lastValueFrom} from "rxjs";
 
 @NgModule({
     exports  : [
@@ -22,8 +31,8 @@ import { TranslocoHttpLoader } from 'app/core/transloco/transloco.http-loader';
                         label: 'Português - Brasil'
                     }
                 ],
-                defaultLang         : 'en',
-                fallbackLang        : 'en',
+                defaultLang         : getBrowserLang(),
+                fallbackLang        : getBrowserLang(),
                 reRenderOnLangChange: true,
                 prodMode            : environment.production
             })
@@ -40,7 +49,7 @@ import { TranslocoHttpLoader } from 'app/core/transloco/transloco.http-loader';
             useFactory: (translocoService: TranslocoService): any => (): Promise<Translation> => {
                 const defaultLang = translocoService.getDefaultLang();
                 translocoService.setActiveLang(defaultLang);
-                return translocoService.load(defaultLang).toPromise();
+                return lastValueFrom(translocoService.load(defaultLang));
             },
             multi     : true
         }

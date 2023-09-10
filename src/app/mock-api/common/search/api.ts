@@ -1,44 +1,67 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import { cloneDeep } from 'lodash-es';
-import { FuseNavigationItem, FuseNavigationService } from '@fuse/components/navigation';
-import { FuseMockApiService } from '@fuse/lib/mock-api';
-import { defaultNavigation } from 'app/mock-api/common/navigation/data';
-import { contacts } from 'app/mock-api/apps/contacts/data';
-import { tasks } from 'app/mock-api/apps/tasks/data';
+import {FuseMockApiService} from '@fuse/lib/mock-api';
+import {BiomesService, MunicipalitiesService, StatesService} from '../../../shared/services';
+import {Feature} from '../../../shared/interfaces';
+import {Subject, takeUntil} from 'rxjs';
+import {normalize} from '../../../shared/utils';
 
 @Injectable({
     providedIn: 'root'
 })
-export class SearchMockApi
-{
-    private readonly _defaultNavigation: FuseNavigationItem[] = defaultNavigation;
-    private readonly _contacts: any[] = contacts;
-    private readonly _tasks: any[] = tasks;
+export class SearchMockApi implements OnDestroy {
+    private biomes: Feature[] = [];
+    private states: any[] = [];
+    private municipalities: any[] = [];
+    private unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
      * Constructor
      */
     constructor(
-        private _fuseMockApiService: FuseMockApiService,
-        private _fuseNavigationService: FuseNavigationService
+        private readonly _fuseMockApiService: FuseMockApiService,
+        private readonly biomesService: BiomesService,
+        private readonly statesService: StatesService,
+        private readonly municipalitiesService: MunicipalitiesService
     )
     {
+        this.subscriptions();
         // Register Mock API handlers
         this.registerHandlers();
     }
 
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-
+    subscriptions(): void{
+        this.biomesService.biomes$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (biomes: Feature[]) => {
+                   this.biomes = biomes;
+                }
+            });
+        this.statesService.states$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (states: Feature[]) => {
+                    this.states = states;
+                }
+            });
+        this.municipalitiesService.municipalities$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (municipalities: Feature[]) => {
+                    this.municipalities = municipalities;
+                }
+            });
+    }
     /**
      * Register Mock API handlers
      */
     registerHandlers(): void
     {
-        // Get the flat navigation and store it
-        const flatNavigation = this._fuseNavigationService.getFlatNavigation(this._defaultNavigation);
-
         // -----------------------------------------------------------------------------------------------------
         // @ Search results - GET
         // -----------------------------------------------------------------------------------------------------
@@ -56,78 +79,81 @@ export class SearchMockApi
                     return [200, {results: []}];
                 }
 
-                // Filter the contacts
-                const contactsResults = cloneDeep(this._contacts)
-                    .filter(contact => contact.name.toLowerCase().includes(query));
+                // Filter the biomes
+                const biomesResults = this.biomes
+                    .filter(biome => normalize(biome.properties.Bioma).includes(normalize(query)));
 
-                // Filter the navigation
-                const pagesResults = cloneDeep(flatNavigation)
-                    .filter(page => (page.title?.toLowerCase().includes(query) || (page.subtitle && page.subtitle.includes(query))));
+                // Filter the states
+                const statesResults = this.states
+                    .filter(state =>  normalize(state.properties.NM_UF).includes(normalize(query)));
 
-                // Filter the tasks
-                const tasksResults = cloneDeep(this._tasks)
-                    .filter(task => task.title.toLowerCase().includes(query));
+                // Filter the municipalities
+                const municipalitiesResults = this.municipalities
+                    .filter(municipality =>  normalize(municipality.properties.NM_MUN).includes(normalize(query)));
 
                 // Prepare the results array
                 const results = [];
 
                 // If there are contacts results...
-                if ( contactsResults.length > 0 )
+                if ( biomesResults.length > 0 )
                 {
+                    const res = [];
                     // Normalize the results
-                    contactsResults.forEach((result) => {
-
-                        // Add a link
-                        result.link = '/apps/contacts/' + result.id;
-
-                        // Add the name as the value
-                        result.value = result.name;
+                    biomesResults.forEach((biome) => {
+                        res.push({
+                            id     : biome.properties.CD_Bioma,
+                            name  : biome.properties.Bioma,
+                            value  : biome.properties.Bioma
+                        });
                     });
 
                     // Add to the results
                     results.push({
-                        id     : 'contacts',
-                        label  : 'Contacts',
-                        results: contactsResults
+                        id     : 'biomes',
+                        label  : 'Biomes',
+                        results: res
                     });
                 }
 
-                // If there are page results...
-                if ( pagesResults.length > 0 )
+                // If there are states results...
+                if ( statesResults.length > 0 )
                 {
+                    const res = [];
                     // Normalize the results
-                    pagesResults.forEach((result: any) => {
-
-                        // Add the page title as the value
-                        result.value = result.title;
+                    statesResults.forEach((state: any) => {
+                        res.push({
+                            id     : state.properties.CD_UF,
+                            name  : state.properties.NM_UF,
+                            value  : state.properties.NM_UF
+                        });
                     });
 
                     // Add to the results
                     results.push({
-                        id     : 'pages',
-                        label  : 'Pages',
-                        results: pagesResults
+                        id     : 'states',
+                        label  : 'States',
+                        results: res
                     });
                 }
 
                 // If there are tasks results...
-                if ( tasksResults.length > 0 )
+                if ( municipalitiesResults.length > 0 )
                 {
+                    const res = [];
                     // Normalize the results
-                    tasksResults.forEach((result) => {
-
-                        // Add a link
-                        result.link = '/apps/tasks/' + result.id;
-
-                        // Add the title as the value
-                        result.value = result.title;
+                    municipalitiesResults.forEach((municipality) => {
+                        res.push({
+                            id     : municipality.properties.CD_MUN,
+                            name  : `${municipality.properties.NM_MUN} - ${municipality.properties.SIGLA_UF}`,
+                            value  : municipality.properties.NM_MUN
+                        });
                     });
 
                     // Add to the results
                     results.push({
-                        id     : 'tasks',
-                        label  : 'Tasks',
-                        results: tasksResults
+                        id     : 'municipalities',
+                        label  : 'Municipalities',
+                        results: res
                     });
                 }
 
@@ -135,4 +161,9 @@ export class SearchMockApi
                 return [200, results];
             });
     }
+    ngOnDestroy(): void {
+        this.unsubscribeAll.next(null);
+        this.unsubscribeAll.complete();
+    }
+
 }

@@ -45,11 +45,9 @@ import { FuseVerticalNavigationComponent } from '@fuse/components/navigation/ver
         MatTooltipModule,
         FuseScrollbarModule
     ],
-    exports     : [
+    exports    : [
         FuseHorizontalNavigationComponent,
         FuseVerticalNavigationComponent
     ]
 })
-export class FuseNavigationModule
-{
-}
+export class FuseNavigationModule {}

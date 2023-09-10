@@ -38,7 +38,8 @@
                 <ng-container *ngIf="item.type === 'basic'">
                     <fuse-vertical-navigation-basic-item
                         [item]="item"
-                        [name]="name"></fuse-vertical-navigation-basic-item>
+                        [name]="name">
+                    </fuse-vertical-navigation-basic-item>
                 </ng-container>
 
                 <!-- Collapsable -->
@@ -76,14 +77,14 @@
         </ng-container>
 
         <!-- Content footer -->
-        <div class="fuse-vertical-navigation-content-footer">
+        <div class="fuse-vertical-navigation-content-footer absolute bottom-0">
             <ng-content select="[fuseVerticalNavigationContentFooter]"></ng-content>
         </div>
 
     </div>
 
     <!-- Footer -->
-    <div class="fuse-vertical-navigation-footer">
+    <div class="fuse-vertical-navigation-footer absolute bottom-0">
         <ng-content select="[fuseVerticalNavigationFooter]"></ng-content>
     </div>
 

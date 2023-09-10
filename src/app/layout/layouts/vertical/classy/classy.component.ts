@@ -1,12 +1,14 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import {Observable, Subject, takeUntil} from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { Navigation } from 'app/core/navigation/navigation.types';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { User } from 'app/core/user/user.types';
 import { UserService } from 'app/core/user/user.service';
+import {Layer} from '../../../../shared/interfaces';
+import {LimitsService} from '../../../../shared/services';
 
 @Component({
     selector     : 'classy-layout',
@@ -17,6 +19,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
     navigation: Navigation;
+    limits$: Observable<Layer[]>;
     user: User;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -24,12 +27,14 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
      * Constructor
      */
     constructor(
+        private cdr: ChangeDetectorRef,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
         private _navigationService: NavigationService,
         private _userService: UserService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
-        private _fuseNavigationService: FuseNavigationService
+        private _fuseNavigationService: FuseNavigationService,
+        private readonly limitsService: LimitsService,
     )
     {
     }
@@ -75,6 +80,9 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
+        this.limits$ = this.limitsService.limits$;
+        this.cdr.detectChanges();
+
     }
 
     /**
@@ -100,11 +108,16 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
     {
         // Get the navigation
         const navigation = this._fuseNavigationService.getComponent<FuseVerticalNavigationComponent>(name);
-
+        // this._fuseNavigationService.
         if ( navigation )
         {
             // Toggle the opened status
             navigation.toggle();
+        }
+    }
+    onChangeLimit(evt: string): void {
+        if (evt) {
+            this.limitsService.updateLimitVisibility(evt, true);
         }
     }
 }

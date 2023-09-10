@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { forkJoin, Observable } from 'rxjs';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { ShortcutsService } from 'app/layout/common/shortcuts/shortcuts.service';
-import {UserService} from 'app/core/user/user.service';
-import {WmsService} from "./shared/wms/wms.service";
+import {BiomesService, LayersService, MunicipalitiesService, StatesService} from './shared/services';
+import {CountryService} from "./shared/services/country.service";
 
 @Injectable({
     providedIn: 'root'
@@ -17,10 +17,12 @@ export class InitialDataResolver implements Resolve<any>
     constructor(
         private _navigationService: NavigationService,
         private _shortcutsService: ShortcutsService,
-        private _wmsService: WmsService,
-    )
-    {
-    }
+        private _layersService: LayersService,
+        private _biomesService: BiomesService,
+        private _statesService: StatesService,
+        private _municipalitiesService: MunicipalitiesService,
+        private _countryService: CountryService
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -36,11 +38,13 @@ export class InitialDataResolver implements Resolve<any>
     {
         // Fork join multiple API endpoint calls to wait all of them to finish
         return forkJoin([
-            this._navigationService.get(),
+            this._layersService.get(),
+            this._countryService.get(),
+            this._biomesService.get(),
+            this._statesService.get(),
+            this._municipalitiesService.get(),
             this._shortcutsService.getAll(),
-            this._wmsService.get()
-            // this._userService.get(),
-            // this._datasetService.get()
+            this._navigationService.get(),
         ]);
     }
 }

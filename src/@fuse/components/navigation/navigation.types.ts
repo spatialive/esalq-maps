@@ -39,6 +39,7 @@ export interface FuseNavigationItem
     };
     icon?: string;
     badge?: {
+        icon?: string;
         title?: string;
         classes?: string;
     };

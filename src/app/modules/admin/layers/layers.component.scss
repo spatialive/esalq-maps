@@ -1,4 +1,9 @@
 .map-content{
+    display: flex;
+    justify-content: center;
     z-index: 101;
     position: absolute;
+}
+.limits{
+    z-index: 102;
 }

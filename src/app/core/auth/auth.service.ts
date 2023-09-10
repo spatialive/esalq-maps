@@ -179,7 +179,7 @@ export class AuthService {
     /**
      * Sign in Oauth
      *
-     * @param params: { code: string; state: string }
+     * @param params: { code: string; states: string }
      */
     signInOauth(params: { code: string; state: string }): Observable<any> {
         // Throw error, if the user is already logged in
@@ -206,7 +206,7 @@ export class AuthService {
     /**
      * Sign in Oauth
      *
-     * @param params: { code: string; state: string }
+     * @param params: { code: string; states: string }
      */
     signInOauthGoogle(params: SocialUser): Observable<any> {
         // Throw error, if the user is already logged in

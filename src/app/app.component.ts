@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {getBrowserLang, TranslocoService} from '@ngneat/transloco';
 
 @Component({
     selector   : 'app-root',
@@ -10,7 +11,11 @@ export class AppComponent
     /**
      * Constructor
      */
-    constructor()
-    {
+    constructor(private translocoService: TranslocoService) {
+        const savedLang = localStorage.getItem('userLang');
+        const blang = getBrowserLang();
+        const browserLang = blang === 'pt' ? blang : 'en';
+        const effectiveLang = savedLang || browserLang;
+        this.translocoService.setActiveLang(effectiveLang);
     }
 }

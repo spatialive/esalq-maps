@@ -124,10 +124,13 @@
     <!-- Badge -->
     <ng-container *ngIf="item.badge">
         <div class="fuse-vertical-navigation-item-badge">
-            <div
+            <mat-icon
+                class="fuse-vertical-navigation-item-icon w-full"
+                [ngClass]="item.badge?.classes"
+                [svgIcon]="item.badge.icon"></mat-icon>
+            <div *ngIf="item.badge.title" [innerHTML]="item.badge.title"
                 class="fuse-vertical-navigation-item-badge-content"
                 [ngClass]="item.badge.classes">
-                {{item.badge.title}}
             </div>
         </div>
     </ng-container>

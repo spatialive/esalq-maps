@@ -6,7 +6,7 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 const shake = trigger('shake',
     [
 
-        // Prevent the transition if the state is false
+        // Prevent the transition if the states is false
         transition('void => false', []),
 
         // Transition

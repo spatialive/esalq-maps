@@ -556,7 +556,9 @@ export class FuseVerticalNavigationComponent implements OnChanges, OnInit, After
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
-
+    onMenuClick(item: FuseNavigationItem): void{
+        console.log('item', item)
+    }
     /**
      * Enable the animations
      *

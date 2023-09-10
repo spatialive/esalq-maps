@@ -14,15 +14,12 @@ import {UploaderModule} from '../../../core/uploader/uploader.module';
 import {MatDialogModule} from '@angular/material/dialog';
 import {FuseAlertModule} from '../../../../@fuse/components/alert';
 import {NgApexchartsModule} from 'ng-apexcharts';
-import {WMSCapabilitiesResolver} from '../../../shared/resolvers/wms-capabilities.resolver';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 const datasetRoutes: Route[] = [
     {
         path     : '',
         component: LayersComponent,
-        resolve: {
-            capabilities: WMSCapabilitiesResolver
-        },
     },
 ];
 
@@ -44,7 +41,8 @@ const datasetRoutes: Route[] = [
         UploaderModule,
         MatDialogModule,
         FuseAlertModule,
-        NgApexchartsModule
+        NgApexchartsModule,
+        MatButtonToggleModule
     ],
     exports: [
         LayersComponent
