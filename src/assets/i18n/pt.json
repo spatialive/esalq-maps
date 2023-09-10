@@ -7,5 +7,111 @@
     "error_500_msg": "Erro no servidor de mapas. Caso o erro persista, por favor, entre em contato com a administração da plataforma.",
     "back": "Voltar para página principal.",
     "no_results": "Nenhum resultado encontrado!",
-    "search_placeholder": "Pesquisar ..."
+    "search_placeholder": "Pesquisar ...",
+    "variaveis_camadas_vetoriais": {
+        "BAU_AGR": {
+            "label": "Agricultura (ha) - (linha de base)",
+            "descricao": "Área de agricultura no cenário BAU (linha de base)"
+        },
+        "BAU_PAS": {
+            "label": "Pastagem (ha) - (linha de base)",
+            "descricao": "Área de pastagem no cenário BAU (linha de base)"
+        },
+        "BAU_VN": {
+            "label": "Vegetação nativa (ha) - (linha de base)",
+            "descricao": "Área de vegetação nativa no cenário BAU (linha de base)"
+        },
+        "S1_AGR": {
+            "label": "Agricultura (ha) - Cen. 1",
+            "descricao": "Área de agricultura no cenário 1"
+        },
+        "S1_PAS": {
+            "label": "Pastagem (ha) - Cen. 1",
+            "descricao": "Área de pastagem no cenário 1"
+        },
+        "S1_VN": {
+            "label": "Vegetação nativa (ha) - Cen. 1",
+            "descricao": "Área de vegetação nativa no cenário 1"
+        },
+        "S2_AGR": {
+            "label": "Agricultura (ha) - Cen. 2",
+            "descricao": "Área de agricultura no cenário 2"
+        },
+        "S2_PAS": {
+            "label": "Pastagem (ha) - Cen. 2",
+            "descricao": "Área de pastagem no cenário 2"
+        },
+        "S2_VN": {
+            "label": "Vegetação nativa (ha) - Cen. 2",
+            "descricao": "Área de vegetação nativa no cenário 2"
+        },
+        "S1_PD": {
+            "label": "Pastagem degradada (ha) - Cen. 1",
+            "descricao": "Área de pastagem degradada no cenário 1"
+        },
+        "S1_PSD": {
+            "label": "Pastagem sem degradação (ha) - Cen. 1",
+            "descricao": "Área de pastagem sem degradação no cenário 1"
+        },
+        "S1_RPD": {
+            "label": "Recuperação de pastagem degradada (ha) - Cen. 1",
+            "descricao": "Área de recuperação de pastagem degradada no cenário 1"
+        },
+        "S1_ILP": {
+            "label": "Integração Lavoura-Pecuária (ha) - Cen. 1",
+            "descricao": "Área de integração lavoura pecuária no cenário 1"
+        },
+        "S2_PD": {
+            "label": "Pastagem degradada (ha) - Cen. 2",
+            "descricao": "Área de pastagem degradada no cenário 2"
+        },
+        "S2_PSD": {
+            "label": "Pastagem sem degradação (ha) - Cen. 2",
+            "descricao": "Área de pastagem sem degradação no cenário 2"
+        },
+        "S2_RPD": {
+            "label": "Recuperação de pastagem degradada (ha) - Cen. 2",
+            "descricao": "Área de recuperação de pastagem degradada no cenário 2"
+        },
+        "S2_ILP": {
+            "label": "Integração Lavoura-Pecuária (ha) - Cen. 2",
+            "descricao": "Área de integração lavoura pecuária no cenário 2"
+        },
+        "BAU_DESM": {
+            "label": "Desmatamento 2020-2030 (ha) - (linha de base)",
+            "descricao": "Área de desmatamento entre 2020 e 2030 no cenário BAU (linha de base)"
+        },
+        "BAU_REG": {
+            "label": "Regeneração da vegetação nativa 2020-2030 (ha) - (linha de base)",
+            "descricao": "Área de regeneração da vegetação nativa entre 2020 e 2030 no cenário BAU (linha de base)"
+        },
+        "BAU_VNM": {
+            "label": "Vegetação nativa mantida 2020-2030 (ha) - (linha de base)",
+            "descricao": "Área de vegetação nativa mantida entre 2020 e 2030 no cenário BAU (linha de base)"
+        },
+        "S1_DESM": {
+            "label": "Desmatamento 2020-2030 (ha) - Cen. 1",
+            "descricao": "Área de desmatamento entre 2020 e 2030 no cenário 1"
+        },
+        "S1_REG": {
+            "label": "Regeneração da vegetação nativa 2020-2030 (ha) - Cen. 1",
+            "descricao": "Área de regeneração da vegetação nativa entre 2020 e 2030 no cenário 1"
+        },
+        "S1_VNM": {
+            "label": "Vegetação nativa mantida 2020-2030 (ha) - Cen. 1",
+            "descricao": "Área de vegetação nativa mantida entre 2020 e 2030 no cenário 1"
+        },
+        "S2_DESM": {
+            "label": "Desmatamento 2020-2030 (ha) - Cen. 2",
+            "descricao": "Área de desmatamento entre 2020 e 2030 no cenário 2"
+        },
+        "S2_REG": {
+            "label": "Regeneração da vegetação nativa 2020-2030 (ha) - Cen. 2",
+            "descricao": "Área de regeneração da vegetação nativa entre 2020 e 2030 no cenário 2"
+        },
+        "S2_VNM": {
+            "label": "Vegetação nativa mantida 2020-2030 (ha) - Cen. 2",
+            "descricao": "Área de vegetação nativa mantida entre 2020 e 2030 no cenário 2"
+        }
+    }
 }
