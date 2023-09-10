@@ -1,0 +1,10 @@
+{
+    "teeb:LULC BAU": ["BAU_AGR", "BAU_PAS","BAU_VN"],
+    "teeb:LULC S1": ["S1_AGR", "S1_PAS", "S1_VN"],
+    "teeb:LULC S2": ["S2_AGR","S2_PAS", "S2_VN"],
+    "teeb:Pastagens S1": ["S1_PD", "S1_PSD", "S1_RPD"],
+    "teeb:Pastagens S2": ["S2_PD","S2_PSD","S2_RPD","S2_ILP"],
+    "teeb:VN BAU": ["BAU_DESM","BAU_REG","BAU_VNM"],
+    "teeb:VN S1": ["S1_DESM","S1_REG","S1_VNM"],
+    "teeb:VN S2": ["S2_DESM","S2_REG","S2_VNM"]
+}
