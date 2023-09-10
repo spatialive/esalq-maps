@@ -7,5 +7,111 @@
     "error_500_msg": "Map server error. If the issue persists, please contact the platform administration.",
     "back": "Go back to the homepage",
     "no_results": "No results found!",
-    "search_placeholder": "Search ..."
+    "search_placeholder": "Search ...",
+    "variaveis_camadas_vetoriais": {
+        "BAU_AGR": {
+            "label": "Agriculture (ha) - (baseline)",
+            "descricao": "Agriculture area in the BAU scenario (baseline)"
+        },
+        "BAU_PAS": {
+            "label": "Pasture (ha) - (baseline)",
+            "descricao": "Pasture area in the BAU scenario (baseline)"
+        },
+        "BAU_VN": {
+            "label": "Native vegetation (ha) - (baseline)",
+            "descricao": "Native vegetation area in the BAU scenario (baseline)"
+        },
+        "S1_AGR": {
+            "label": "Agriculture (ha) - Scenario 1",
+            "descricao": "Agriculture area in scenario 1"
+        },
+        "S1_PAS": {
+            "label": "Pasture (ha) - Scenario 1",
+            "descricao": "Pasture area in scenario 1"
+        },
+        "S1_VN": {
+            "label": "Native vegetation (ha) - Scenario 1",
+            "descricao": "Native vegetation area in scenario 1"
+        },
+        "S2_AGR": {
+            "label": "Agriculture (ha) - Scenario 2",
+            "descricao": "Agriculture area in scenario 2"
+        },
+        "S2_PAS": {
+            "label": "Pasture (ha) - Scenario 2",
+            "descricao": "Pasture area in scenario 2"
+        },
+        "S2_VN": {
+            "label": "Native vegetation (ha) - Scenario 2",
+            "descricao": "Native vegetation area in scenario 2"
+        },
+        "S1_PD": {
+            "label": "Degraded pasture (ha) - Scenario 1",
+            "descricao": "Area of degraded pasture in scenario 1"
+        },
+        "S1_PSD": {
+            "label": "Pasture without degradation (ha) - Scenario 1",
+            "descricao": "Area of pasture without degradation in scenario 1"
+        },
+        "S1_RPD": {
+            "label": "Recovery of degraded pasture (ha) - Scenario 1",
+            "descricao": "Area of recovery of degraded pasture in scenario 1"
+        },
+        "S1_ILP": {
+            "label": "Crop-Livestock Integration (ha) - Scenario 1",
+            "descricao": "Area of crop-livestock integration in scenario 1"
+        },
+        "S2_PD": {
+            "label": "Degraded pasture (ha) - Scenario 2",
+            "descricao": "Area of degraded pasture in scenario 2"
+        },
+        "S2_PSD": {
+            "label": "Pasture without degradation (ha) - Scenario 2",
+            "descricao": "Area of pasture without degradation in scenario 2"
+        },
+        "S2_RPD": {
+            "label": "Recovery of degraded pasture (ha) - Scenario 2",
+            "descricao": "Area of recovery of degraded pasture in scenario 2"
+        },
+        "S2_ILP": {
+            "label": "Crop-Livestock Integration (ha) - Scenario 2",
+            "descricao": "Area of crop-livestock integration in scenario 2"
+        },
+        "BAU_DESM": {
+            "label": "Deforestation 2020-2030 (ha) - (baseline)",
+            "descricao": "Deforestation area between 2020 and 2030 in the BAU scenario (baseline)"
+        },
+        "BAU_REG": {
+            "label": "Regeneration of native vegetation 2020-2030 (ha) - (baseline)",
+            "descricao": "Area of native vegetation regeneration between 2020 and 2030 in the BAU scenario (baseline)"
+        },
+        "BAU_VNM": {
+            "label": "Maintained native vegetation 2020-2030 (ha) - (baseline)",
+            "descricao": "Area of maintained native vegetation between 2020 and 2030 in the BAU scenario (baseline)"
+        },
+        "S1_DESM": {
+            "label": "Deforestation 2020-2030 (ha) - Scenario 1",
+            "descricao": "Deforestation area between 2020 and 2030 in scenario 1"
+        },
+        "S1_REG": {
+            "label": "Regeneration of native vegetation 2020-2030 (ha) - Scenario 1",
+            "descricao": "Area of native vegetation regeneration between 2020 and 2030 in scenario 1"
+        },
+        "S1_VNM": {
+            "label": "Maintained native vegetation 2020-2030 (ha) - Scenario 1",
+            "descricao": "Area of maintained native vegetation between 2020 and 2030 in scenario 1"
+        },
+        "S2_DESM": {
+            "label": "Deforestation 2020-2030 (ha) - Scenario 2",
+            "descricao": "Deforestation area between 2020 and 2030 in scenario 2"
+        },
+        "S2_REG": {
+            "label": "Regeneration of native vegetation 2020-2030 (ha) - Scenario 2",
+            "descricao": "Area of native vegetation regeneration between 2020 and 2030 in scenario 2"
+        },
+        "S2_VNM": {
+            "label": "Maintained native vegetation 2020-2030 (ha) - Scenario 2",
+            "descricao": "Area of maintained native vegetation between 2020 and 2030 in scenario 2"
+        }
+    }
 }
