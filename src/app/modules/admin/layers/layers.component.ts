@@ -16,6 +16,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {Collection} from './layers.types';
 import {WmsService} from '../../../shared/wms/wms.service';
 import {ActivatedRoute} from '@angular/router';
+import {CapabilitiesState} from "../../../shared/state/capabilities.state";
+import {WfsService} from "../../../shared/wfs/wfs.service";
 
 @Component({
     selector: 'layers',
@@ -40,7 +42,9 @@ export class LayersComponent implements OnInit, AfterViewInit {
         private readonly layersService: LayersService,
         public readonly dialog: MatDialog,
         private readonly wmsService: WmsService,
+        private readonly wfsService: WfsService,
         private readonly route: ActivatedRoute,
+        private readonly capabilitiesState: CapabilitiesState
     ) {
         this.layers = [
             new TileLayer({
@@ -68,6 +72,25 @@ export class LayersComponent implements OnInit, AfterViewInit {
     }
     ngOnInit(): void {
         const capabilities = this.route.snapshot.data['capabilities'];
+        // this.capabilitiesState.getState().subscribe({next: value => console.log("CAP - ", value),
+        //     error: err => {console.log(err)}
+        // })
+
+        this.wfsService.getEstados().subscribe({next: value => console.log("Estados - ", value),
+            error: err => {console.log(err)}
+        })
+
+        this.wfsService.getMunicipios().subscribe({next: value => console.log("Municipios - ", value),
+            error: err => {console.log(err)}
+        })
+
+        this.wfsService.getBiomas().subscribe({next: value => console.log("Biomas - ", value),
+            error: err => {console.log(err)}
+        })
+
+        this.wfsService.getBrasil().subscribe({next: value => console.log("Brasil - ", value),
+            error: err => {console.log(err)}
+        })
     }
     ngAfterViewInit(): void {
         this.setDimensions();

@@ -55,7 +55,7 @@ export class WmsService {
         const parser: WMSCapabilities = new WMSCapabilities();
         const parsedResult = parser.read(response);
         const layersArray = parsedResult?.Capability?.Layer.Layer;
-        console.log(layersArray);
+
         let layers = [];
 
         if (Array.isArray(layersArray)) {
