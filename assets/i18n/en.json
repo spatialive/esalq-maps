@@ -5,5 +5,7 @@
     "error_404_msg": "The page you requested could not be found.",
     "error_500_title": "Something went wrong!",
     "error_500_msg": "Map server error. If the issue persists, please contact the platform administration.",
-    "back": "Go back to the homepage"
+    "back": "Go back to the homepage",
+    "no_results": "No results found!",
+    "search_placeholder": "Search ..."
 }
