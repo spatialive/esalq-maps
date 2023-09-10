@@ -30,6 +30,10 @@ export class LimitsService {
         let limits: Layer[] = [];
         if (Array.isArray(layers)) {
             limits = layers.filter(lay => lay.Name.includes('teeb:camada_'));
+            limits = limits.map((limit): Layer => {
+                limit.visible = limit.Name.includes('camada_BR');
+                return limit;
+            });
         }
         this.limits = limits;
     }
@@ -51,11 +55,12 @@ export class LimitsService {
     }
     updateLimitVisibility(name: string, visible: boolean): void {
         this._limits.pipe(take(1)).subscribe((limits) => {
-            const index = limits.findIndex(limit => limit.Name === name);
-            if (index !== -1) {
-                limits[index]['visible'] = visible;
-            } else {
-                limits[index]['visible'] = false;
+            for (const limit of limits) {
+                if (limit.Name === name) {
+                    limit.visible = visible;
+                } else {
+                    limit.visible = false;
+                }
             }
             this._limits.next(limits);
         });

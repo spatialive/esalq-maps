@@ -80,12 +80,14 @@ export class SearchMockApi implements OnDestroy {
                 }
 
                 // Filter the biomes
-                const biomesResults = this.biomes
-                    .filter(biome => normalize(biome.properties.Bioma).includes(normalize(query)));
+                const biomesResults = [];
+                // const biomesResults = this.biomes
+                //     .filter(biome => normalize(biome.properties.Bioma).includes(normalize(query)));
 
                 // Filter the states
-                const statesResults = this.states
-                    .filter(state =>  normalize(state.properties.NM_UF).includes(normalize(query)));
+                const statesResults = [];
+                // const statesResults = this.states
+                //     .filter(state =>  normalize(state.properties.NM_UF).includes(normalize(query)));
 
                 // Filter the municipalities
                 const municipalitiesResults = this.municipalities

@@ -37,8 +37,8 @@ export class LayersService {
             .pipe(
                 map((value) => {
                     const capabilities = this.parseWMSCapabilities(value);
-                    console.log('capabilities', capabilities);
                     this.layers = capabilities;
+                    console.log(capabilities);
                     return capabilities;
                 }),
                 catchError((error) => {
@@ -57,6 +57,10 @@ export class LayersService {
 
         if (Array.isArray(layersArray)) {
             layers = layersArray.filter(lay => lay.Name.includes('teeb:'));
+            layers = layers.map((lay) => {
+                lay['visible'] = false;
+                return lay;
+            });
         }
         return layers;
     }

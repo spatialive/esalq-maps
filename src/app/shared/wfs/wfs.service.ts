@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {catchError, map, Observable, of, ReplaySubject, switchMap} from 'rxjs';
+import {catchError, map, Observable, of, switchMap} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {MessagesService} from '../../layout/common/messages/messages.service';
+import {BiomesService, CountryService, MunicipalitiesService, StatesService} from '../services';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +12,10 @@ export class WfsService {
     private mapperLayers: any;
     constructor(
         private _http: HttpClient,
-        private readonly messageSevice: MessagesService
+        private _biomesService: BiomesService,
+        private _statesService: StatesService,
+        private _municipalitiesService: MunicipalitiesService,
+        private _countryService: CountryService,
     ) {
         this.wfsUrl = `${environment.geoserverUrl}/geoserver/ows`;
         this.mapperLayers = {
@@ -37,12 +40,13 @@ export class WfsService {
         return this.fetchLayerPropertyNames(layerName)
             .pipe(
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
-                map(response => {
+                map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        this._municipalitiesService.municipalities = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
-                        console.error("Features array not found or not an array in response", response);
+                        console.error('Features array not found or not an array in response', response);
                         return [];
                     }
                 }),
@@ -54,16 +58,17 @@ export class WfsService {
     }
 
     getEstados(): Observable<any[]> {
-        const layerName = this.mapperLayers['estados']
+        const layerName = this.mapperLayers['estados'];
         return this.fetchLayerPropertyNames(layerName)
             .pipe(
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
-                map(response => {
+                map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        this._statesService.states = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
-                        console.error("Features array not found or not an array in response", response);
+                        console.error('Features array not found or not an array in response', response);
                         return [];
                     }
                 }),
@@ -75,16 +80,17 @@ export class WfsService {
     }
 
     getBiomas(): Observable<any[]> {
-        const layerName = this.mapperLayers['biomas']
+        const layerName = this.mapperLayers['biomas'];
         return this.fetchLayerPropertyNames(layerName)
             .pipe(
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
-                map(response => {
+                map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        this._biomesService.biomes = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
-                        console.error("Features array not found or not an array in response", response);
+                        console.error('Features array not found or not an array in response', response);
                         return [];
                     }
                 }),
@@ -100,12 +106,13 @@ export class WfsService {
         return this.fetchLayerPropertyNames(layerName)
             .pipe(
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
-                map(response => {
+                map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        this._countryService.country = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
-                        console.error("Features array not found or not an array in response", response);
+                        console.error('Features array not found or not an array in response', response);
                         return [];
                     }
                 }),
@@ -123,6 +130,7 @@ export class WfsService {
             request: 'GetFeature',
             typeName: layerName,
             outputFormat: 'application/json',
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             format_options: 'CHARSET:UTF-8',
             propertyName: properties.join(',')
         };
@@ -137,7 +145,7 @@ export class WfsService {
             );
     }
 
-    private fetchLayerPropertyNames(layerName) {
+    private fetchLayerPropertyNames(layerName){
         const queryParams = {
             service: 'WFS',
             version: '1.0.0',
@@ -149,7 +157,7 @@ export class WfsService {
 
         return this._http.get(this.createUrl(queryParams), { responseType: 'text' })
             .pipe(
-                map(response => {
+                map((response) => {
                     const data = JSON.parse(response);
                     if (data.features && data.features.length > 0) {
                         const firstFeatureProperties = data.features[0].properties;

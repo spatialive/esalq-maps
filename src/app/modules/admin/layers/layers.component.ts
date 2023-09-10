@@ -8,21 +8,22 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {Tile as TileLayer} from 'ol/layer';
 import {XYZ, TileWMS} from 'ol/source';
 import {Subject, take, takeUntil} from 'rxjs';
 import {
+    Layer,
     BiomesService,
+    CountryService,
     LayersService,
     LimitsService,
     MunicipalitiesService,
-    StatesService
-} from '../../../shared/services';
-import {CountryService} from '../../../shared/services';
+    StatesService,
+    WfsService
+} from '../../../shared';
 import Map from 'ol/Map';
-import {Layer} from '../../../shared/interfaces';
 import {environment} from '../../../../environments/environment';
-import {WfsService} from '../../../shared/wfs/wfs.service';
+
 @Component({
     selector: 'layers',
     templateUrl: './layers.component.html',
@@ -39,8 +40,6 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     protected mapWidth: number;
     protected mapHeight: number;
     private unsubscribeAll: Subject<any> = new Subject<any>();
-    private lays: Layer[] = [];
-    private limits: Layer[] = [];
     /**
      * Constructor
      */
@@ -55,24 +54,9 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly wfsService: WfsService,
     ) {
         this.extentOptions = {
-            extent: [-12273952.2539,-4285365.5538,176110.9132,269058.3396]
+            extent: [-100.546875,-46.073231,-4.570313,17.644022]
         };
-        this.layers = [
-            new TileLayer({
-                properties: {
-                    key: 'mapbox',
-                    type: 'bmap',
-                    visible: true,
-                },
-                source: new XYZ({
-                    wrapX: false,
-                    attributions: '© <a href=\'https://www.mapbox.com/about/maps/\'>Mapbox</a>',
-                    url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' +
-                        'pk.eyJ1IjoidGhhcmxlc2FuZHJhZGUiLCJhIjoiY2thaHAxcDM5MGx2dzJ4dDExaGQ0bGF3ciJ9.kiB2OzG3Q0THur8XLUW3Gg'
-                }),
-                visible: true
-            })
-        ];
+        this.layers = [];
     }
     @HostListener('window:resize', ['$event'])
     setDimensions(): void {
@@ -87,25 +71,20 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     ngOnInit(): void {
        // setTimeout(this.setDimensions, 900);
-        // this.capabilitiesState.getState().subscribe({next: value => console.log("CAP - ", value),
-        //     error: err => {console.log(err)}
-        // })
-
-        // this.wfsService.getEstados().subscribe({next: value => console.log('Estados - ', value),
-        //     error: err => console.log(err)
-        // });
-        //
-        // this.wfsService.getMunicipios().subscribe({next: value => console.log('Municipios - ', value),
-        //     error: err => console.log(err)
-        // });
-        //
-        // this.wfsService.getBiomas().subscribe({next: value => console.log('Biomas - ', value),
-        //     error: err => console.log(err)
-        // });
-        //
-        // this.wfsService.getBrasil().subscribe({next: value => console.log('Brasil - ', value),
-        //     error: err => console.log(err)
-        // });
+        this.layers.push(new TileLayer({
+            properties: {
+                name: 'mapbox',
+                type: 'bmap',
+                visible: true,
+            },
+            source: new XYZ({
+                wrapX: false,
+                attributions: '© <a href=\'https://www.mapbox.com/about/maps/\'>Mapbox</a>',
+                url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' +
+                    'pk.eyJ1IjoidGhhcmxlc2FuZHJhZGUiLCJhIjoiY2thaHAxcDM5MGx2dzJ4dDExaGQ0bGF3ciJ9.kiB2OzG3Q0THur8XLUW3Gg'
+            }),
+            visible: true
+        }));
     }
     subscriptions(): void{
         this.layersService.layers$
@@ -114,13 +93,21 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (layers) => {
                    this.limitsService.get(layers);
-                   layers = layers.filter(lay => !lay.Name.includes('teeb:camada_'));
+                   const lays = layers.filter(lay => !lay.Name.includes('teeb:camada_'));
                    const limits = layers.filter(lay => lay.Name.includes('teeb:camada_'));
-                   this.lays = layers;
-                   this.limits = limits;
+                    this.addLayers(lays);
+                    this.addLimits(limits);
                 }
             });
         this.layersService.layers$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    layers = layers.filter(lay => !lay.Name.includes('teeb:camada_'));
+                    this.handleLayers(layers);
+                }
+            });
+        this.limitsService.limits$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (layers) => {
@@ -145,14 +132,14 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     source: new TileWMS({
                         url: `${environment.geoserverUrl}/geoserver/wms`,
                         params: {
-                            version: '1.1.1',
                             tiled: true,
                             layers: lay.Name
-                        }
+                        },
+                        serverType: 'geoserver',
                     }),
                     properties: {
-                        title: lay.Name,
-                        key: 'layer',
+                        name: lay.Name,
+                        title: lay.Title,
                         type: 'raster',
                     },
                 });
@@ -168,14 +155,14 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     source: new TileWMS({
                         url: `${environment.geoserverUrl}/geoserver/wms`,
                         params: {
-                            version: '1.1.1',
                             tiled: true,
                             layers: lay.Name
-                        }
+                        },
+                        serverType: 'geoserver',
                     }),
                     properties: {
-                        title: lay.Name,
-                        key: 'limit',
+                        name: lay.Name,
+                        title: lay.Title,
                         type: 'vector',
                     },
                 });
@@ -184,10 +171,9 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    update(name: string, visible: boolean = false): void {
-        const layer = this.map.getLayers().getArray().find(baseLayer => baseLayer.get('title') === name);
+    update(name: string, visible: boolean): void {
+        const layer = this.map.getLayers().getArray().find(baseLayer => baseLayer.get('name') === name);
         if (layer) {
-            console.log(visible);
             layer.setVisible(visible);
         }
     }
@@ -197,8 +183,6 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     onMapReady(map: Map): void {
         this.map = map;
-        this.addLayers(this.lays);
-        this.addLimits(this.limits);
     }
     ngOnDestroy(): void {
         this.unsubscribeAll.next(null);

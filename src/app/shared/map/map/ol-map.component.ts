@@ -16,6 +16,7 @@ import {defaults as defaultInteractions} from 'ol/interaction';
 import * as Proj from 'ol/proj';
 import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4';
+import { extend } from 'ol/extent';
 import {fromLonLat, get as getProjection, getPointResolution, Projection, toLonLat} from 'ol/proj';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
 
@@ -100,12 +101,12 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             worldExtent: wordExtent
         });
         const view: View = new View({
-            center: fromLonLat([this.lon,this.lat], this.projection.getCode()),
+            center: fromLonLat([this.lon, this.lat], 'EPSG:4326'),
             zoom: this.zoom,
-            minZoom: 2,
-            maxZoom: 20,
-            extent: this.extent,
-            projection: this.projection
+            minZoom: 5.5,
+            maxZoom: 15,
+            // extent: this.extent,
+            // projection: this.projection
         });
 
         this.map = new Map({
@@ -119,17 +120,36 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.map.on('loadend', () => {
             self.fuseLoadingService.hide();
         });
-        this.cdRef.detectChanges();
         setTimeout(() => {
             this.ready.emit(this.map);
         });
+        this.cdRef.detectChanges();
     }
     updateMapSize(): void {
         this.map?.updateSize();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
+        if (this.map){
+            // let combinedExtent = null;
+            // this.map.getLayers().forEach((layer) => {
+            //     const layerExtent = layer.getExtent();
+            //     if (layerExtent) {
+            //         if (combinedExtent) {
+            //             combinedExtent = extend(combinedExtent, layerExtent);
+            //         } else {
+            //             combinedExtent = layerExtent;
+            //         }
+            //     }
+            // });
+            //
+            // if (combinedExtent) {
+            //     this.map.getView().fit(combinedExtent, {
+            //         size: this.map.getSize(),
+            //         padding: [10, 10, 10, 10],
+            //     });
+            // }
+        }
     }
 
     setSize(): void {
@@ -167,6 +187,11 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             return '';
         }
         return cssUnitsPattern.test(value) ? value : `${value}px`;
+    }
+    moveToTop(map: Map, layer): void {
+        console.log(map, layer);
+        map.removeLayer(layer);
+        map.addLayer(layer);
     }
     ngOnDestroy(): void {
     }

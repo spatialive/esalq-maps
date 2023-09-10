@@ -63,9 +63,11 @@
 
         <!-- Components -->
         <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
-            <mat-button-toggle-group appearance="standard" (valueChange)="onChangeLimit($event)">
-                <mat-button-toggle *ngFor="let limit of limits$ | async" value="{{limit.Name}}">{{limit.Title}}</mat-button-toggle>
-            </mat-button-toggle-group>
+            <div class="overflow-x-auto sm:overflow-x-scroll">
+                <mat-button-toggle-group appearance="standard" [value]="limitsSelected"  (valueChange)="onChangeLimit($event)">
+                    <mat-button-toggle *ngFor="let limit of limits$ | async" value="{{limit.Name}}">{{limit.Title}}</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
             <languages></languages>
             <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
             <search [appearance]="'bar'"></search>

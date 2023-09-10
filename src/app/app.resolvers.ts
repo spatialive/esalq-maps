@@ -3,9 +3,8 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { forkJoin, Observable } from 'rxjs';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { ShortcutsService } from 'app/layout/common/shortcuts/shortcuts.service';
-import {BiomesService, LayersService, MunicipalitiesService, StatesService} from './shared/services';
-import {CountryService} from './shared/services';
-import {WfsService} from './shared/wfs/wfs.service';
+import {LayersService} from './shared';
+import {WfsService} from './shared';
 
 @Injectable({
     providedIn: 'root'
@@ -19,10 +18,6 @@ export class InitialDataResolver implements Resolve<any>
         private _navigationService: NavigationService,
         private _shortcutsService: ShortcutsService,
         private _layersService: LayersService,
-        private _biomesService: BiomesService,
-        private _statesService: StatesService,
-        private _municipalitiesService: MunicipalitiesService,
-        private _countryService: CountryService,
         private readonly wfsService: WfsService
     ) {}
 
@@ -41,10 +36,6 @@ export class InitialDataResolver implements Resolve<any>
         // Fork join multiple API endpoint calls to wait all of them to finish
         return forkJoin([
             this._layersService.get(),
-            // this._countryService.get(),
-            // this._biomesService.get(),
-            // this._statesService.get(),
-            // this._municipalitiesService.get(),
             this.wfsService.getBrasil(),
             this.wfsService.getEstados(),
             this.wfsService.getBiomas(),

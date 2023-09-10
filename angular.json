@@ -43,7 +43,9 @@
                             "web-worker",
                             "xml-utils/get-attribute.js",
                             "xml-utils/find-tags-by-name.js",
-                            "query-string"
+                            "query-string",
+                            "pbf",
+                            "earcut"
                         ],
                         "assets": [
                             "src/favicon-16x16.png",

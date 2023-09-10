@@ -51,7 +51,7 @@ export class NavigationMockApi
                             layers = layers.filter(l => !l.Name.includes('teeb:camada_'));
                             layers.forEach((lay) => {
 
-                                const navigationItem = {
+                                const navigationItem: FuseNavigationItem = {
                                     active: false,
                                     id: lay.Name,
                                     title: lay.Title.toUpperCase(),
@@ -63,12 +63,11 @@ export class NavigationMockApi
                                         this.layersService.updateLayerVisibility(item.id, item.active);
                                     }
                                 };
-
-                                this.updateOrPush(this._compactNavigation, navigationItem);
-                                this.updateOrPush(this._futuristicNavigation, navigationItem);
-                                this.updateOrPush(this._defaultNavigation, navigationItem);
-                                this.updateOrPush(this._horizontalNavigation, navigationItem);
-
+                                this._compactNavigation.push(navigationItem);
+                                this._futuristicNavigation.push(navigationItem);
+                                this._defaultNavigation.push(navigationItem);
+                                this._horizontalNavigation.push(navigationItem);
+                                this._compactNavigation.push(navigationItem);
                             });
                         }
                     }
@@ -83,13 +82,5 @@ export class NavigationMockApi
                     }
                 ];
             });
-    }
-    updateOrPush(targetArray: any[], newItem: any): void {
-        const index = targetArray.findIndex(item => item.id === newItem.id);
-        if (index !== -1) {
-            targetArray[index] = newItem;
-        } else {
-            targetArray.push(newItem);
-        }
     }
 }
