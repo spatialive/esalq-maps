@@ -22,6 +22,7 @@ import {CountryService} from '../../../shared/services';
 import Map from 'ol/Map';
 import {Layer} from '../../../shared/interfaces';
 import {environment} from '../../../../environments/environment';
+import {WfsService} from '../../../shared/wfs/wfs.service';
 @Component({
     selector: 'layers',
     templateUrl: './layers.component.html',
@@ -50,7 +51,8 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly countryService: CountryService,
         private readonly biomesService: BiomesService,
         private readonly statesService: StatesService,
-        private readonly municipalitiesService: MunicipalitiesService
+        private readonly municipalitiesService: MunicipalitiesService,
+        private readonly wfsService: WfsService,
     ) {
         this.extentOptions = {
             extent: [-12273952.2539,-4285365.5538,176110.9132,269058.3396]
@@ -85,6 +87,25 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     ngOnInit(): void {
        // setTimeout(this.setDimensions, 900);
+        // this.capabilitiesState.getState().subscribe({next: value => console.log("CAP - ", value),
+        //     error: err => {console.log(err)}
+        // })
+
+        this.wfsService.getEstados().subscribe({next: value => console.log('Estados - ', value),
+            error: err => console.log(err)
+        });
+
+        this.wfsService.getMunicipios().subscribe({next: value => console.log('Municipios - ', value),
+            error: err => console.log(err)
+        });
+
+        this.wfsService.getBiomas().subscribe({next: value => console.log('Biomas - ', value),
+            error: err => console.log(err)
+        });
+
+        this.wfsService.getBrasil().subscribe({next: value => console.log('Brasil - ', value),
+            error: err => console.log(err)
+        });
     }
     subscriptions(): void{
         this.layersService.layers$
