@@ -27,6 +27,6 @@ export class TranslocoHttpLoader implements TranslocoLoader
      */
     getTranslation(lang: string): Observable<Translation>
     {
-        return this._httpClient.get<Translation>(`./assets/i18n/${lang}.json`);
+        return this._httpClient.get<Translation>(`https://raw.githubusercontent.com/spatialive/esalq-maps/main/src/assets/i18n/${lang}.json`);
     }
 }

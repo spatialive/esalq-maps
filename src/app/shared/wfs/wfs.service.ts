@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map, Observable, of, ReplaySubject, switchMap} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {CapabilitiesState} from '../state/capabilities.state';
 import {MessagesService} from '../../layout/common/messages/messages.service';
 
 @Injectable({
@@ -13,7 +12,6 @@ export class WfsService {
     private mapperLayers: any;
     constructor(
         private _http: HttpClient,
-        private readonly capabilitiesState: CapabilitiesState,
         private readonly messageSevice: MessagesService
     ) {
         this.wfsUrl = `${environment.geoserverUrl}/geoserver/ows`;
@@ -22,8 +20,7 @@ export class WfsService {
             estados: 'teeb:camada_estados',
             biomas: 'teeb:camada_biomas',
             brasil: 'teeb:camada_BR'
-
-        }
+        };
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -36,7 +33,7 @@ export class WfsService {
      */
 
     getMunicipios(): Observable<any[]> {
-        const layerName = this.mapperLayers['municipios']
+        const layerName = this.mapperLayers['municipios'];
         return this.fetchLayerPropertyNames(layerName)
             .pipe(
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
@@ -99,7 +96,7 @@ export class WfsService {
     }
 
     getBrasil(): Observable<any[]> {
-        const layerName = this.mapperLayers['brasil']
+        const layerName = this.mapperLayers['brasil'];
         return this.fetchLayerPropertyNames(layerName)
             .pipe(
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
@@ -122,7 +119,7 @@ export class WfsService {
     private requestWFSWithProperties(layerName: string, properties: string[]): Observable<any> {
         const queryParams = {
             service: 'WFS',
-            version: '1.1.1',
+            version: '1.0.0',
             request: 'GetFeature',
             typeName: layerName,
             outputFormat: 'application/json',
@@ -143,7 +140,7 @@ export class WfsService {
     private fetchLayerPropertyNames(layerName) {
         const queryParams = {
             service: 'WFS',
-            version: '1.1.1',
+            version: '1.0.0',
             request: 'GetFeature',
             typeName: layerName,
             maxFeatures: 1,

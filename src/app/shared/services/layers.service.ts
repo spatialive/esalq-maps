@@ -33,10 +33,11 @@ export class LayersService {
         this._layers.next(value);
     }
     get(): Observable<any[]> {
-        return this._http.get(`${this.wmsUrl}?service=wms&version=1.1.1&request=GetCapabilities`, { responseType: 'text' })
+        return this._http.get(`${this.wmsUrl}?service=wms&version=1.3.0&request=GetCapabilities`, { responseType: 'text' })
             .pipe(
                 map((value) => {
                     const capabilities = this.parseWMSCapabilities(value);
+                    console.log('capabilities', capabilities);
                     this.layers = capabilities;
                     return capabilities;
                 }),
@@ -79,7 +80,6 @@ export class LayersService {
         this._layers.pipe(take(1)).subscribe((layers) => {
             const index = layers.findIndex(limit => limit.Name === name);
             if (index !== -1) {
-                console.log(layers[index]);
                 layers[index]['visible'] = visible;
                 this._layers.next(layers);
             }

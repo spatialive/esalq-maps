@@ -91,21 +91,21 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         //     error: err => {console.log(err)}
         // })
 
-        this.wfsService.getEstados().subscribe({next: value => console.log('Estados - ', value),
-            error: err => console.log(err)
-        });
-
-        this.wfsService.getMunicipios().subscribe({next: value => console.log('Municipios - ', value),
-            error: err => console.log(err)
-        });
-
-        this.wfsService.getBiomas().subscribe({next: value => console.log('Biomas - ', value),
-            error: err => console.log(err)
-        });
-
-        this.wfsService.getBrasil().subscribe({next: value => console.log('Brasil - ', value),
-            error: err => console.log(err)
-        });
+        // this.wfsService.getEstados().subscribe({next: value => console.log('Estados - ', value),
+        //     error: err => console.log(err)
+        // });
+        //
+        // this.wfsService.getMunicipios().subscribe({next: value => console.log('Municipios - ', value),
+        //     error: err => console.log(err)
+        // });
+        //
+        // this.wfsService.getBiomas().subscribe({next: value => console.log('Biomas - ', value),
+        //     error: err => console.log(err)
+        // });
+        //
+        // this.wfsService.getBrasil().subscribe({next: value => console.log('Brasil - ', value),
+        //     error: err => console.log(err)
+        // });
     }
     subscriptions(): void{
         this.layersService.layers$

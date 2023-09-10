@@ -4,7 +4,8 @@ import { forkJoin, Observable } from 'rxjs';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { ShortcutsService } from 'app/layout/common/shortcuts/shortcuts.service';
 import {BiomesService, LayersService, MunicipalitiesService, StatesService} from './shared/services';
-import {CountryService} from "./shared/services/country.service";
+import {CountryService} from './shared/services';
+import {WfsService} from './shared/wfs/wfs.service';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +22,8 @@ export class InitialDataResolver implements Resolve<any>
         private _biomesService: BiomesService,
         private _statesService: StatesService,
         private _municipalitiesService: MunicipalitiesService,
-        private _countryService: CountryService
+        private _countryService: CountryService,
+        private readonly wfsService: WfsService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -39,10 +41,14 @@ export class InitialDataResolver implements Resolve<any>
         // Fork join multiple API endpoint calls to wait all of them to finish
         return forkJoin([
             this._layersService.get(),
-            this._countryService.get(),
-            this._biomesService.get(),
-            this._statesService.get(),
-            this._municipalitiesService.get(),
+            // this._countryService.get(),
+            // this._biomesService.get(),
+            // this._statesService.get(),
+            // this._municipalitiesService.get(),
+            this.wfsService.getBrasil(),
+            this.wfsService.getEstados(),
+            this.wfsService.getBiomas(),
+            this.wfsService.getMunicipios(),
             this._shortcutsService.getAll(),
             this._navigationService.get(),
         ]);
