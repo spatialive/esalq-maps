@@ -19,10 +19,11 @@ import {
     LimitsService,
     MunicipalitiesService,
     StatesService,
-    WfsService
+    WfsService, setHighestZIndex
 } from '../../../shared';
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
+import {TranslocoService} from "@ngneat/transloco";
 
 @Component({
     selector: 'layers',
@@ -52,10 +53,8 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly statesService: StatesService,
         private readonly municipalitiesService: MunicipalitiesService,
         private readonly wfsService: WfsService,
+        private readonly translocoService: TranslocoService
     ) {
-        this.extentOptions = {
-            extent: [-100.546875,-46.073231,-4.570313,17.644022]
-        };
         this.layers = [];
     }
     @HostListener('window:resize', ['$event'])
@@ -70,21 +69,38 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cdr.detectChanges();
     }
     ngOnInit(): void {
-       // setTimeout(this.setDimensions, 900);
-        this.layers.push(new TileLayer({
+       // // setTimeout(this.setDimensions, 900);
+       //  this.layers.unshift(new TileLayer({
+       //      properties: {
+       //          name: 'mapbox',
+       //          type: 'bmap',
+       //          visible: true,
+       //      },
+       //      source: new XYZ({
+       //          wrapX: false,
+       //          attributions: '© <a href=\'https://www.mapbox.com/about/maps/\'>Mapbox</a>',
+       //          url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' +
+       //              'pk.eyJ1IjoidGhhcmxlc2FuZHJhZGUiLCJhIjoiY2thaHAxcDM5MGx2dzJ4dDExaGQ0bGF3ciJ9.kiB2OzG3Q0THur8XLUW3Gg'
+       //      }),
+       //      visible: true
+       //  }));
+        this.layers.unshift(new TileLayer({
             properties: {
-                name: 'mapbox',
+                key: 'google',
                 type: 'bmap',
-                visible: true,
+                visible: false,
             },
             source: new XYZ({
-                wrapX: false,
-                attributions: '© <a href=\'https://www.mapbox.com/about/maps/\'>Mapbox</a>',
-                url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' +
-                    'pk.eyJ1IjoidGhhcmxlc2FuZHJhZGUiLCJhIjoiY2thaHAxcDM5MGx2dzJ4dDExaGQ0bGF3ciJ9.kiB2OzG3Q0THur8XLUW3Gg'
+                attributions: 'Google Satellite',
+                url:
+                    'https://mt{0-3}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
             }),
             visible: true
         }));
+        this.extentOptions = {
+            tipLabel: this.translocoService.translate('extent_lable'),
+            extent: [-80.455078,-30.496675,6.226563,50.966176]
+        };
     }
     subscriptions(): void{
         this.layersService.layers$
@@ -112,6 +128,13 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (layers) => {
                     this.handleLayers(layers);
+                }
+            });
+        this.translocoService.langChanges$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (values) => {
+                    this.extentOptions.tipLabel = this.translocoService.translate('extent_lable');
                 }
             });
     }
@@ -175,6 +198,9 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         const layer = this.map.getLayers().getArray().find(baseLayer => baseLayer.get('name') === name);
         if (layer) {
             layer.setVisible(visible);
+            if(visible){
+                setHighestZIndex(this.map, layer);
+            }
         }
     }
     ngAfterViewInit(): void {
@@ -183,6 +209,16 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     onMapReady(map: Map): void {
         this.map = map;
+        this.limitsService.limits$
+            .pipe(take(1))
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    setTimeout(() => {
+                        this.handleLayers(layers);
+                    }, 1000);
+                }
+            });
     }
     ngOnDestroy(): void {
         this.unsubscribeAll.next(null);

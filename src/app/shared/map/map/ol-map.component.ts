@@ -13,11 +13,10 @@ import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import {defaults as defaultInteractions} from 'ol/interaction';
-import * as Proj from 'ol/proj';
 import proj4 from 'proj4';
+import * as Proj from 'ol/proj';
 import {register} from 'ol/proj/proj4';
-import { extend } from 'ol/extent';
-import {fromLonLat, get as getProjection, getPointResolution, Projection, toLonLat} from 'ol/proj';
+import {fromLonLat, get as getProjection, Projection} from 'ol/proj';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
 
 export const DEFAULT_WIDTH = '100%';
@@ -101,10 +100,10 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             worldExtent: wordExtent
         });
         const view: View = new View({
-            center: fromLonLat([this.lon, this.lat], 'EPSG:4326'),
+            center: Proj.fromLonLat([this.lon, this.lat]),
             zoom: this.zoom,
-            minZoom: 5.5,
-            maxZoom: 15,
+            minZoom: 4.8,
+            maxZoom: 19,
             // extent: this.extent,
             // projection: this.projection
         });

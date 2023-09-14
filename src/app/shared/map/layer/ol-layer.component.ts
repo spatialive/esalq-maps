@@ -1,5 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {OlMapComponent} from '../map/ol-map.component';
+import {setHighestZIndex} from "../../utils";
 
 @Component({
     selector: 'ol-layer',
@@ -21,10 +22,7 @@ export class OlLayerComponent implements OnInit {
                     hasLayer = true;
                 }
                 layer.on('change:visible', (event) => {
-                    console.log(event);
-                    if (layer.getVisible()) {
-                        self.setHighestZIndex(self.olMap.map, layer);
-                    }
+                    //
                 });
             });
             if (hasLayer) {
@@ -32,7 +30,7 @@ export class OlLayerComponent implements OnInit {
             } else {
                 this.olMap.addLayer(this.layer);
                 setTimeout(() => {
-                    this.setHighestZIndex(this.olMap.map, this.layer);
+                    setHighestZIndex(this.olMap.map, this.layer);
                 }, 200);
             }
         } else {
@@ -41,11 +39,5 @@ export class OlLayerComponent implements OnInit {
             }, 10);
         }
         this.cdRef.detectChanges();
-    }
-
-    setHighestZIndex(map, layer): void {
-        const layers = map.getLayers().getArray();
-        const maxZIndex = Math.max(...layers.map(l => l.getZIndex() || 0));
-        layer.setZIndex(maxZIndex + 1);
     }
 }

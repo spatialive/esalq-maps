@@ -8,6 +8,7 @@
     "back": "Go back to the homepage",
     "no_results": "No results found!",
     "search_placeholder": "Search ...",
+    "extent_lable": "Fit to extent",
     "variaveis_camadas_vetoriais": {
         "BAU_AGR": {
             "label": "Agriculture (ha) - (baseline)",
