@@ -8,6 +8,7 @@
     "back": "Voltar para página principal.",
     "no_results": "Nenhum resultado encontrado!",
     "search_placeholder": "Pesquisar ...",
+    "extent_lable": "Adaptar à extensão",
     "variaveis_camadas_vetoriais": {
         "BAU_AGR": {
             "label": "Agricultura (ha) - (linha de base)",
