@@ -17,7 +17,8 @@ import { ShortcutsModule } from 'app/layout/common/shortcuts/shortcuts.module';
 import { UserModule } from 'app/layout/common/user/user.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { ClassyLayoutComponent } from 'app/layout/layouts/vertical/classy/classy.component';
-import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {LimitsModule} from '../../../../modules/admin/limits/limits.module';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
         ShortcutsModule,
         UserModule,
         SharedModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        LimitsModule
     ],
     exports     : [
         ClassyLayoutComponent

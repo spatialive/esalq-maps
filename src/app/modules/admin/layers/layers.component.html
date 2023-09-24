@@ -6,10 +6,10 @@
             [zoom]="2.8"
             [width]="mapWidth"
             [height]="mapHeight"
-            (ready)="onMapReady($event)">
+            (ready)="onMapReady($event)"
+            (clickPoint)="handlePoint($event)">
             <ol-control class="mobileHide" control="FullScreen"></ol-control>
             <ol-control class="mobileHide" control="scaleline"></ol-control>
-            <ol-control class="mobileHide" control="zoomtoextend" [options]=""></ol-control>
             <ol-layer *ngFor="let layer of layers" [layer]="layer"></ol-layer>
         </ol-map>
     </div>

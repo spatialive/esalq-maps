@@ -20,32 +20,8 @@
             </div>
             <!-- Components -->
             <div class="flex items-center ml-auto">
-<!--                <notifications></notifications>-->
-<!--                <user [showAvatar]="false"></user>-->
             </div>
         </div>
-        <!-- User -->
-<!--        <div class="flex flex-col items-center w-full p-4">-->
-<!--            <div class="relative w-24 h-24">-->
-<!--                <img-->
-<!--                    class="w-full h-full rounded-full"-->
-<!--                    *ngIf="user?.avatar"-->
-<!--                    [src]="user?.avatar"-->
-<!--                    alt="User avatar">-->
-<!--                <mat-icon-->
-<!--                    class="icon-size-24"-->
-<!--                    *ngIf="!user?.avatar"-->
-<!--                    [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>-->
-<!--            </div>-->
-<!--            <div class="flex flex-col items-center justify-center w-full mt-6">-->
-<!--                <div class="w-full whitespace-nowrap text-ellipsis overflow-hidden text-center leading-normal font-medium">-->
-<!--                    {{user?.name}}-->
-<!--                </div>-->
-<!--                <div class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">-->
-<!--                    {{user?.email}}-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
     </ng-container>
 </fuse-vertical-navigation>
 
@@ -63,11 +39,10 @@
 
         <!-- Components -->
         <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
-            <div class="overflow-x-auto sm:overflow-x-scroll">
-                <mat-button-toggle-group appearance="standard" [value]="limitsSelected"  (valueChange)="onChangeLimit($event)">
-                    <mat-button-toggle *ngFor="let limit of limits$ | async" value="{{limit.Name}}">{{limit.Title}}</mat-button-toggle>
-                </mat-button-toggle-group>
-            </div>
+            <button mat-icon-button  (click)="openStatisticsDialog()">
+                <mat-icon svgIcon="mat_solid:table_chart"></mat-icon>
+            </button>
+            <limits></limits>
             <languages></languages>
             <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
             <search [appearance]="'bar'"></search>

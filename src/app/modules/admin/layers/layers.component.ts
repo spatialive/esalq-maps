@@ -24,6 +24,7 @@ import {
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
 import {TranslocoService} from "@ngneat/transloco";
+import {FuseMediaWatcherService} from "../../../../@fuse/services/media-watcher";
 
 @Component({
     selector: 'layers',
@@ -53,7 +54,8 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly statesService: StatesService,
         private readonly municipalitiesService: MunicipalitiesService,
         private readonly wfsService: WfsService,
-        private readonly translocoService: TranslocoService
+        private readonly translocoService: TranslocoService,
+        private readonly fuseMediaWatcherService: FuseMediaWatcherService,
     ) {
         this.layers = [];
     }
@@ -65,25 +67,9 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.mapWidth = containerMapDimensions.width < 300 ? 300 : containerMapDimensions.width - 20;
         this.mapHeight = containerMapDimensions.height - 70;
-        // console.log(containerMapDimensions, this.mapWidth, this.mapHeight);
         this.cdr.detectChanges();
     }
     ngOnInit(): void {
-       // // setTimeout(this.setDimensions, 900);
-       //  this.layers.unshift(new TileLayer({
-       //      properties: {
-       //          name: 'mapbox',
-       //          type: 'bmap',
-       //          visible: true,
-       //      },
-       //      source: new XYZ({
-       //          wrapX: false,
-       //          attributions: '© <a href=\'https://www.mapbox.com/about/maps/\'>Mapbox</a>',
-       //          url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' +
-       //              'pk.eyJ1IjoidGhhcmxlc2FuZHJhZGUiLCJhIjoiY2thaHAxcDM5MGx2dzJ4dDExaGQ0bGF3ciJ9.kiB2OzG3Q0THur8XLUW3Gg'
-       //      }),
-       //      visible: true
-       //  }));
         this.layers.unshift(new TileLayer({
             properties: {
                 key: 'google',
@@ -135,6 +121,14 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (values) => {
                     this.extentOptions.tipLabel = this.translocoService.translate('extent_lable');
+                }
+            });
+       this.fuseMediaWatcherService.onMediaChange$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: ({matchingAliases}) => {
+                    // Check if the screen is small
+                    // this.isScreenSmall = !matchingAliases.includes('md');
                 }
             });
     }
@@ -220,6 +214,254 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
     }
+    handlePoint(evt): void{
+        console.log(evt);
+    }
+
+    // async onDisplayFeatureInfo(pixel: Pixel, evt: MapEvent) {
+    //     if (this.lastSelected != null && this.lastSelected !== this.selecao.nativeElement) {
+    //         // Não apresenta as informações se houver uma ferramenta ativa que não seja a específica de seleção.
+    //         return;
+    //     }
+    //
+    //     if (this.lastInfo != null) {
+    //         this.map.removeOverlay(this.lastInfo);
+    //         this.lastInfo = null;
+    //     }
+    //
+    //     const tipoCoordenada = this.tipoCoordenadas.value;
+    //     const features = new Array<Feature>();
+    //     const text: Element[] = new Array<Element>();
+    //
+    //     const sources: TileWMS[] = this.map.getLayers().getArray().filter(layer => layer.getSource() instanceof TileWMS);
+    //     for (const layer of sources) {
+    //         if (!layer.getVisible()) {
+    //             continue;
+    //         }
+    //
+    //         const div = document.createElement('div');
+    //         div.innerHTML = 'Carregando...';
+    //         text.push(div);
+    //
+    //         const url = layer.getSource().getFeatureInfoUrl(
+    //             evt.coordinate,
+    //             this.map.getView().getResolution(),
+    //             'EPSG:4674',
+    //             {
+    //                 INFO_FORMAT: 'application/json'
+    //             }
+    //         )
+    //
+    //         this.httpClient.get<Camada[]>(`${this.env.URL_GEOPORTAL_BASE_REFERENCIA}/api/camadas/featureInfo`, {
+    //             responseType: 'json',
+    //             params: {
+    //                 url: url
+    //             }
+    //         }).subscribe((ret: any) => {
+    //             div.innerHTML = '';
+    //             ret.forEach(item => {
+    //                 const properties = item.properties;
+    //                 Object.keys(properties).forEach((property: string) => {
+    //                     if (property !== 'geometry') {
+    //                         let valor = properties[property];
+    //                         if (valor instanceof Date) {
+    //                             valor = [valor.getDate(), valor.getMonth() + 1, valor.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/');
+    //                         }
+    //                         div.innerHTML += `<p><strong>${property.replace(/_/g, ' ')}:</strong> ${tentaResolverProblemaEncoding(valor) || ''}</p>`;
+    //                     }
+    //                 });
+    //             });
+    //         }, error => {
+    //             if (error.status === 0) {
+    //                 this.snackBarService.showError('Sistema de informações de ponto indisponível')
+    //             } else {
+    //                 this.snackBarService.showError(error.error || error.message)
+    //                 div.innerHTML = '';
+    //             }
+    //         });
+    //     }
+    //
+    //     const geometrias: GeometriaMapa[] = this.getGeometriaCamadas();
+    //
+    //     this.map.forEachFeatureAtPixel(pixel, feature => features.push(feature));
+    //
+    //     for (const feature of features) {
+    //         // Não apresentar as informações se for a régua.
+    //         if (!feature.regua) {
+    //             const geometria = geometrias.find(g => g.feature === feature);
+    //             const properties = {...(geometria && geometria.propriedades), ...feature.getProperties() || feature.properties};
+    //
+    //             if (properties) {
+    //                 if (feature.id_) {
+    //                     properties.id = feature.id_;
+    //                 }
+    //
+    //                 Object.keys(properties).forEach((property: string) => {
+    //                     if (property !== 'geometry') {
+    //                         let valor = properties[property];
+    //                         if (valor) {
+    //                             if (valor instanceof Date) {
+    //                                 valor = [valor.getDate(), valor.getMonth() + 1, valor.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/');
+    //                             }
+    //                             const div = document.createElement('div');
+    //                             div.innerHTML = `<p><strong>${property.replace(/_/g, ' ')}:</strong> ${valor || ''}</p>`;
+    //                             text.push(div);
+    //                         }
+    //                     }
+    //                 });
+    //             }
+    //
+    //             let coordinate: Coordinate;
+    //             const geometry: Polygon = feature.getGeometry() || feature.geometry;
+    //             if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
+    //                 if (text.length !== 0) {
+    //                     text.push(document.createElement('hr'));
+    //                 }
+    //
+    //                 const div = document.createElement('div');
+    //                 const area = await this.areaGeometriaService.getArea(geometry).toPromise()
+    //
+    //                 div.innerHTML = `<p><strong>Área: </strong> ${area}</p>`;
+    //
+    //                 text.push(div);
+    //
+    //                 coordinate = geometry.getInteriorPoint().getCoordinates();
+    //             } else if (geometry instanceof Point) {
+    //                 coordinate = toLonLat(geometry.getCoordinates(), this.map.getView().getProjection());
+    //             } else {
+    //                 coordinate = toLonLat(evt.coordinate, this.map.getView().getProjection());
+    //             }
+    //
+    //             if (coordinate != null) {
+    //                 let valor: string;
+    //                 if (tipoCoordenada === '1') {
+    //                     const formatado: string[] = this.formataCoordenada(coordinate).split(', ');
+    //
+    //                     if (text.length > 0) {
+    //                         text.push(document.createElement('hr'));
+    //                     }
+    //                     valor = `<p><strong>Latitude:</strong> ${formatado[1]}</p>
+    //                             <p class="latitude"><strong>Longitude:</strong> ${formatado[0]}</p>`;
+    //                 } else {
+    //                     valor = `<p class="latitude" ><strong>Coordenadas:</strong> ${toStringHDMS(coordinate, 4)}</p>`;
+    //                 }
+    //
+    //                 const div = document.createElement('div');
+    //                 div.innerHTML = valor;
+    //                 text.push(div);
+    //             }
+    //             if (geometria && ((geometria.extraOptions && geometria.extraOptions.length) || ((geometria.permissao && geometria.permissao.editar)))) {
+    //                 const div = document.createElement('div');
+    //                 div.style.marginTop = '10px';
+    //                 div.style.textAlign = 'right';
+    //                 div.style.whiteSpace = 'nowrap';
+    //
+    //                 if (geometria.extraOptions) {
+    //                     geometria.extraOptions.forEach(option => {
+    //                         const span = document.createElement('span');
+    //                         span.className = 'mat-button-wrapper';
+    //
+    //                         if (option.icon) {
+    //                             const icon = document.createElement('mat-icon');
+    //                             icon.className = 'mat-icon notranslate material-icons mat-icon-no-color';
+    //                             icon.setAttribute('role', 'img');
+    //                             icon.innerText = option.icon;
+    //                             span.appendChild(icon);
+    //                         }
+    //
+    //                         span.appendChild(document.createTextNode(' ' + option.text));
+    //                         const button = document.createElement('button');
+    //                         button.style.marginLeft = '10px';
+    //                         if (option.callback) {
+    //                             button.addEventListener('click', (_) => {
+    //                                 option.callback(geometria);
+    //                             });
+    //                         }
+    //                         button.appendChild(span);
+    //                         button.className = 'mat-raised-button mat-secondary';
+    //                         div.appendChild(button);
+    //
+    //                         text.push(div);
+    //                     });
+    //                 }
+    //
+    //                 if (geometria.permissao && geometria.permissao.editar) {
+    //                     const button = document.createElement('button');
+    //                     button.addEventListener('click', (_) => {
+    //                         this.showProgressBar = true;
+    //                         this.editFeature.emit(geometria);
+    //                         this.showProgressBar = false;
+    //                     });
+    //
+    //                     const span = document.createElement('span');
+    //                     span.className = 'mat-button-wrapper';
+    //
+    //                     const icon = document.createElement('mat-icon');
+    //                     icon.className = 'mat-icon notranslate material-icons mat-icon-no-color';
+    //                     icon.setAttribute('role', 'img');
+    //                     icon.innerText = 'edit';
+    //                     span.appendChild(icon);
+    //
+    //                     span.appendChild(document.createTextNode(' Editar atributos'));
+    //                     button.style.marginLeft = '10px';
+    //                     button.appendChild(span);
+    //                     button.className = 'mat-raised-button mat-primary';
+    //
+    //                     div.appendChild(button);
+    //                     text.push(div);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    //     if (features.length === 0) {
+    //         const coordinate = toLonLat(evt.coordinate, this.map.getView().getProjection());
+    //         let valor: string;
+    //         if (this.tipoCoordenadas.value === '1') {
+    //             const formatado: string[] = this.formataCoordenada(coordinate).split(', ');
+    //
+    //             if (text.length > 0) {
+    //                 text.push(document.createElement('hr'));
+    //             }
+    //             valor = `<p><strong>Latitude:</strong> ${formatado[1]}</p>
+    //                      <p class="latitude"><strong>Longitude:</strong> ${formatado[0]}</p>`;
+    //         } else {
+    //             valor = `<p class="latitude"><strong>Coordenadas:</strong> ${toStringHDMS(coordinate, 4)}</p>`;
+    //         }
+    //         const div = document.createElement('div');
+    //         div.innerHTML = valor;
+    //
+    //         text.push(div);
+    //     }
+    //
+    //     if (text.length !== 0) {
+    //         const closer = document.createElement('span');
+    //         closer.className = 'ol-popup-closer';
+    //
+    //         const toolTip = document.createElement('div');
+    //         toolTip.className = 'ol-popup ol-popup-info';
+    //         toolTip.appendChild(closer);
+    //         text.forEach(e => toolTip.appendChild(e));
+    //
+    //         // Não adiciona o offset da popup se não houver uma feature.
+    //         const offset = features.length === 0 ? 0 : -15;
+    //         this.lastInfo = new Overlay({
+    //             element: toolTip,
+    //             offset: [0, offset],
+    //             positioning: 'bottom-center',
+    //         });
+    //
+    //         this.lastInfo.setPosition(evt.coordinate);
+    //         this.addOverlay(this.lastInfo);
+    //
+    //         closer.addEventListener('click', () => {
+    //             if (this.lastInfo != null) {
+    //                 this.map.removeOverlay(this.lastInfo);
+    //                 this.lastInfo = null;
+    //             }
+    //         });
+    //     }
+    // }
     ngOnDestroy(): void {
         this.unsubscribeAll.next(null);
         this.unsubscribeAll.complete();

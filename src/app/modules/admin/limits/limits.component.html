@@ -1,0 +1,21 @@
+<!-- Button -->
+<button
+    mat-stroked-button
+    [matMenuTriggerFor]="menuRef">
+    {{limitsSelected?.Title}}
+</button>
+
+<!-- Limit menu -->
+<mat-menu
+    [xPosition]="'before'"
+    #menuRef="matMenu">
+    <ng-container *ngFor="let limit of limits">
+        <button
+            mat-menu-item
+            (click)="onChangeLimit(limit)">
+            <span class="flex items-center">
+                <span class="ml-3">{{limit.Title}}</span>
+            </span>
+        </button>
+    </ng-container>
+</mat-menu>

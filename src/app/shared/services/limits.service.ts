@@ -31,7 +31,7 @@ export class LimitsService {
         if (Array.isArray(layers)) {
             limits = layers.filter(lay => lay.Name.includes('teeb:camada_'));
             limits = limits.map((limit): Layer => {
-                limit.visible = limit.Name.includes('camada_BR');
+                limit.visible = limit.Name.includes('camada_br');
                 return limit;
             });
         }

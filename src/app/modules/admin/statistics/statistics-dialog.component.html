@@ -1,0 +1,23 @@
+<div class="relative flex flex-col w-full h-full">
+    <h2 class="prose lg:prose-xl" mat-dialog-title>{{data.title}}</h2>
+    <div mat-dialog-content>
+        <div class="flex w-full">
+
+            <div class="flex">
+                <mat-form-field [formControl]="themesSeleted" class="flex-auto">
+                    <mat-chip-grid #themesGrid>
+                        <mat-chip-row *ngFor="let theme of themes" matChipRemove>
+                            {{theme.Title}}
+                        </mat-chip-row>
+                        <input
+                            [placeholder]="'Selecione os temas...'"
+                            [matChipInputFor]="themesGrid">
+                    </mat-chip-grid>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-flat-button (click)="close()" cdkFocusInitial>Fechar</button>
+    </div>
+</div>

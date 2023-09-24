@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Route, RouterModule } from '@angular/router';
 import {LayersComponent} from './layers.component';
@@ -14,7 +14,7 @@ import {UploaderModule} from '../../../core/uploader/uploader.module';
 import {MatDialogModule} from '@angular/material/dialog';
 import {FuseAlertModule} from '../../../../@fuse/components/alert';
 import {NgApexchartsModule} from 'ng-apexcharts';
-import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 const datasetRoutes: Route[] = [
     {
@@ -22,7 +22,6 @@ const datasetRoutes: Route[] = [
         component: LayersComponent,
     },
 ];
-
 @NgModule({
     declarations: [
         LayersComponent

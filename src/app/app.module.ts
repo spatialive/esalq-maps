@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ExtraOptions, PreloadAllModules, RouterModule} from '@angular/router';
@@ -31,6 +31,7 @@ const googleLoginOptions: GoogleInitOptions = {
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
+        LayoutModule,
         RouterModule.forRoot(appRoutes, routerConfig),
 
         // Fuse, FuseConfig & FuseMockAPI
@@ -70,6 +71,7 @@ const googleLoginOptions: GoogleInitOptions = {
             } as SocialAuthServiceConfig,
         }
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
 export class AppModule {
 }

@@ -1,7 +1,7 @@
 const proxy = [
     {
         context: ['/geoservico'],
-        target: 'http://34.71.4.88:3000',
+        target: 'http://34.123.211.92:8080',
         pathRewrite: {'^/geoservico' : ''},
         secure: true,
         logLevel: 'debug',

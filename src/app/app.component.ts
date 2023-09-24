@@ -16,6 +16,7 @@ export class AppComponent
         const blang = getBrowserLang();
         const browserLang = blang === 'pt' ? blang : 'en';
         const effectiveLang = savedLang || browserLang;
+        console.log('effectiveLang', effectiveLang);
         this.translocoService.setActiveLang(effectiveLang);
     }
 }

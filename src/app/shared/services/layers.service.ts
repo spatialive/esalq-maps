@@ -38,7 +38,6 @@ export class LayersService {
                 map((value) => {
                     const capabilities = this.parseWMSCapabilities(value);
                     this.layers = capabilities;
-                    console.log(capabilities);
                     return capabilities;
                 }),
                 catchError((error) => {

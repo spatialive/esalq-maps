@@ -1,14 +1,13 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import {FuseMockApiService} from '@fuse/lib/mock-api';
-import {BiomesService, MunicipalitiesService, StatesService} from '../../../shared/services';
-import {Feature} from '../../../shared/interfaces';
+import {BiomesService, MunicipalitiesService, StatesService, Feature, normalize, fixEncoding} from '../../../shared';
 import {Subject, takeUntil} from 'rxjs';
-import {normalize} from '../../../shared/utils';
 
 @Injectable({
     providedIn: 'root'
 })
+
 export class SearchMockApi implements OnDestroy {
     private biomes: Feature[] = [];
     private states: any[] = [];
@@ -53,7 +52,11 @@ export class SearchMockApi implements OnDestroy {
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (municipalities: Feature[]) => {
-                    this.municipalities = municipalities;
+                    this.municipalities = municipalities.map((feat) => {
+                        feat.properties['TITULO'] = fixEncoding( feat.properties['TITULO']);
+                        return feat;
+                    });
+                    console.log(this.municipalities);
                 }
             });
     }
@@ -91,7 +94,7 @@ export class SearchMockApi implements OnDestroy {
 
                 // Filter the municipalities
                 const municipalitiesResults = this.municipalities
-                    .filter(municipality =>  normalize(municipality.properties.NM_MUN).includes(normalize(query)));
+                    .filter(municipality =>  normalize(municipality.properties.TITULO).includes(normalize(query)));
 
                 // Prepare the results array
                 const results = [];
@@ -145,9 +148,9 @@ export class SearchMockApi implements OnDestroy {
                     // Normalize the results
                     municipalitiesResults.forEach((municipality) => {
                         res.push({
-                            id     : municipality.properties.CD_MUN,
-                            name  : `${municipality.properties.NM_MUN} - ${municipality.properties.SIGLA_UF}`,
-                            value  : municipality.properties.NM_MUN
+                            id     : municipality.properties.CODIGO,
+                            name  : `${municipality.properties.TITULO} - ${municipality.properties.SIGLA_UF}`,
+                            value  : municipality.properties.TITULO
                         });
                     });
 

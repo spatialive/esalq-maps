@@ -1,26 +1,24 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {Observable, of, Subject, takeUntil} from 'rxjs';
+import { Subject, takeUntil} from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { Navigation } from 'app/core/navigation/navigation.types';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { User } from 'app/core/user/user.types';
 import { UserService } from 'app/core/user/user.service';
-import {Layer} from '../../../../shared/interfaces';
-import {LimitsService} from '../../../../shared/services';
+import {MatDialog} from "@angular/material/dialog";
+import {StatisticsDialogComponent} from "../../../../modules/admin/statistics/statistics-dialog.component";
 
 @Component({
     selector     : 'classy-layout',
     templateUrl  : './classy.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class ClassyLayoutComponent implements OnInit, AfterViewInit, OnDestroy
+export class ClassyLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
     navigation: Navigation;
-    limits$: Observable<Layer[]>;
-    limitsSelected: string;
     user: User;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -35,7 +33,7 @@ export class ClassyLayoutComponent implements OnInit, AfterViewInit, OnDestroy
         private _userService: UserService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _fuseNavigationService: FuseNavigationService,
-        private readonly limitsService: LimitsService,
+        public dialog: MatDialog
     )
     {
     }
@@ -84,20 +82,6 @@ export class ClassyLayoutComponent implements OnInit, AfterViewInit, OnDestroy
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
     }
-    ngAfterViewInit(): void {
-        this.limitsService.limits$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe({
-                next: (limits) => {
-                    Promise.resolve().then(() => {
-                        const limit = limits.find(l => l.visible);
-                        this.limitsSelected =  limit ? limit.Name : null;
-                        this.limits$ = of(limits);
-                        this.cdr.detectChanges();
-                    });
-                }
-            });
-    }
     /**
      * On destroy
      */
@@ -128,9 +112,16 @@ export class ClassyLayoutComponent implements OnInit, AfterViewInit, OnDestroy
             navigation.toggle();
         }
     }
-    onChangeLimit(evt: string): void {
-        if (evt) {
-            this.limitsService.updateLimitVisibility(evt, true);
-        }
+
+    openStatisticsDialog(): void {
+        const dialogRef = this.dialog.open(StatisticsDialogComponent, {
+            width: '90%',
+            height: '90%',
+            data: {title: 'Estatísticas'},
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+            console.log('The dialog was closed');
+        });
     }
 }

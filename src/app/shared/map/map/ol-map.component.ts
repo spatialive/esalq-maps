@@ -18,6 +18,7 @@ import * as Proj from 'ol/proj';
 import {register} from 'ol/proj/proj4';
 import {fromLonLat, get as getProjection, Projection} from 'ol/proj';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
+import {MapEvent} from "ol";
 
 export const DEFAULT_WIDTH = '100%';
 export const DEFAULT_HEIGHT = '500px';
@@ -37,6 +38,7 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     @Input() loading: boolean = false;
     @Input() zoom: number;
     @Output() ready = new EventEmitter<Map>();
+    @Output() clickPoint: EventEmitter<MapEvent> = new EventEmitter<MapEvent>();
     public target: string = '';
     public _width: number | string;
     public _height: number | string;
@@ -119,6 +121,8 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
         this.map.on('loadend', () => {
             self.fuseLoadingService.hide();
         });
+        this.map.on('singleclick', async (evt: MapEvent) => this.clickPoint.emit(evt));
+
         setTimeout(() => {
             this.ready.emit(this.map);
         });

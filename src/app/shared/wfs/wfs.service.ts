@@ -22,7 +22,7 @@ export class WfsService {
             municipios: 'teeb:camada_municipios',
             estados: 'teeb:camada_estados',
             biomas: 'teeb:camada_biomas',
-            brasil: 'teeb:camada_BR'
+            brasil: 'teeb:camada_br'
         };
     }
 
