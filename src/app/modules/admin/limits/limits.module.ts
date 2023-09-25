@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { SharedModule } from 'app/shared/shared.module';
-import {LimitsComponent} from './limits.component';
+import { LimitsComponent } from './limits.component';
 
 @NgModule({
     declarations: [
@@ -19,6 +19,4 @@ import {LimitsComponent} from './limits.component';
         LimitsComponent
     ]
 })
-export class LimitsModule
-{
-}
+export class LimitsModule {}

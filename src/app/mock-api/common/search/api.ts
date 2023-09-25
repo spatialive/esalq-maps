@@ -53,10 +53,9 @@ export class SearchMockApi implements OnDestroy {
             .subscribe({
                 next: (municipalities: Feature[]) => {
                     this.municipalities = municipalities.map((feat) => {
-                        feat.properties['TITULO'] = fixEncoding( feat.properties['TITULO']);
+                        feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
                         return feat;
                     });
-                    console.log(this.municipalities);
                 }
             });
     }

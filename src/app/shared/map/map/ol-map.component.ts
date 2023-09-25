@@ -16,9 +16,9 @@ import {defaults as defaultInteractions} from 'ol/interaction';
 import proj4 from 'proj4';
 import * as Proj from 'ol/proj';
 import {register} from 'ol/proj/proj4';
-import {fromLonLat, get as getProjection, Projection} from 'ol/proj';
+import {get as getProjection, Projection} from 'ol/proj';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
-import {MapEvent} from "ol";
+import {MapEvent} from 'ol';
 
 export const DEFAULT_WIDTH = '100%';
 export const DEFAULT_HEIGHT = '500px';

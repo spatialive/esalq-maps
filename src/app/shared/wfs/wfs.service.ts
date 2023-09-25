@@ -131,13 +131,13 @@ export class WfsService {
             typeName: layerName,
             outputFormat: 'application/json',
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            format_options: 'CHARSET:UTF-8',
+            format_options: 'CHARSET:ISO-8859-1',
             propertyName: properties.join(',')
         };
 
-        return this._http.get(this.createUrl(queryParams), { responseType: 'text' })
+        return this._http.get(this.createUrl(queryParams), { responseType: 'json' })
             .pipe(
-                map(response => JSON.parse(response)),
+                map(response => response),
                 catchError((error) => {
                     console.error(error);
                     return of(null);
@@ -155,10 +155,10 @@ export class WfsService {
             outputFormat: 'application/json'
         };
 
-        return this._http.get(this.createUrl(queryParams), { responseType: 'text' })
+        return this._http.get(this.createUrl(queryParams), { responseType: 'json' })
             .pipe(
                 map((response) => {
-                    const data = JSON.parse(response);
+                    const data: any = response;
                     if (data.features && data.features.length > 0) {
                         const firstFeatureProperties = data.features[0].properties;
                         return Object.keys(firstFeatureProperties);

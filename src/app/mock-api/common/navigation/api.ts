@@ -48,9 +48,8 @@ export class NavigationMockApi
                 this.layersService.layers$.pipe(take(1)).subscribe({
                     next: (layers) => {
                         if (Array.isArray(layers)) {
-                            layers = layers.filter(l => !l.Name.includes('teeb:camada_'));
+                            layers = layers.filter(l => !l.Name.includes('teeb:camada'));
                             layers.forEach((lay) => {
-
                                 const navigationItem: FuseNavigationItem = {
                                     active: false,
                                     id: lay.Name,

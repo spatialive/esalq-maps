@@ -1,5 +1,4 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
@@ -26,9 +25,6 @@ export class LimitsComponent implements OnInit, OnDestroy {
         private readonly limitsService: LimitsService
     ) {
     }
-
-
-
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------

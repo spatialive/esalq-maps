@@ -60,6 +60,7 @@ export class LayersService {
                 lay['visible'] = false;
                 return lay;
             });
+            layers[0]['visible'] = true;
         }
         return layers;
     }

@@ -7,6 +7,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 export const statisticsModules = [
     CommonModule,
@@ -19,6 +20,7 @@ export const statisticsModules = [
     MatButtonModule,
     MatSelectModule,
     MatChipsModule,
-    MatDialogModule
+    MatDialogModule,
+    MatAutocompleteModule
 ];
 

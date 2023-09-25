@@ -1,13 +1,13 @@
 export interface Layer {
-    Name: string;
-    Title: string;
-    Abstract: string;
-    KeywordList: string[];
-    BoundingBox: BoundingBox[];
-    Style: Style[];
-    queryable: boolean;
-    opaque: boolean;
-    noSubsets: boolean;
+    Name?: string;
+    Title?: string;
+    Abstract?: string;
+    KeywordList?: string[];
+    BoundingBox?: BoundingBox[];
+    Style?: Style[];
+    queryable?: boolean;
+    opaque?: boolean;
+    noSubsets?: boolean;
     visible?: boolean;
 }
 export interface BoundingBox {
@@ -16,12 +16,12 @@ export interface BoundingBox {
     res: any[];
 }
 export interface Style {
-    Name: string;
-    Title: string;
-    LegendURL: LegendUrl[];
+    Name?: string;
+    Title?: string;
+    LegendURL?: LegendUrl[];
 }
 export interface LegendUrl {
-    Format: string;
-    OnlineResource: string;
-    size: number[];
+    Format?: string;
+    OnlineResource?: string;
+    size?: number[];
 }
