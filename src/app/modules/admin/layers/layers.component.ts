@@ -19,12 +19,14 @@ import {
     LimitsService,
     MunicipalitiesService,
     StatesService,
-    WfsService, setHighestZIndex
+    WfsService, setHighestZIndex, Feature, fixEncoding
 } from '../../../shared';
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
 import {TranslocoService} from "@ngneat/transloco";
 import {FuseMediaWatcherService} from "../../../../@fuse/services/media-watcher";
+import {Pixel} from "ol/pixel";
+import {toLonLat, transform, transformExtent} from 'ol/proj';
 
 @Component({
     selector: 'layers',
@@ -42,6 +44,13 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     protected mapWidth: number;
     protected mapHeight: number;
     private unsubscribeAll: Subject<any> = new Subject<any>();
+    private activeLimit: any;
+    private activeLayers: any[] = []
+    private mapperLimits: any;
+
+    public displayFeatureInfo: any = {};
+
+
     /**
      * Constructor
      */
@@ -87,6 +96,15 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             tipLabel: this.translocoService.translate('extent_lable'),
             extent: [-80.455078,-30.496675,6.226563,50.966176]
         };
+
+        this.mapperLimits = {
+            municipios: [],
+            estados: [],
+            biomas: [],
+            br: []
+        };
+
+
     }
     subscriptions(): void{
         this.layersService.layers$
@@ -116,6 +134,39 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.handleLayers(layers);
                 }
             });
+
+        this.countryService.country$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (country: Feature[]) => {
+                    this.mapperLimits.br = country;
+                }
+            });
+        this.biomesService.biomes$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (biomes: Feature[]) => {
+                    this.mapperLimits.biomas = biomes;
+                }
+            });
+        this.statesService.states$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (states: Feature[]) => {
+                    this.mapperLimits.estados = states;
+                }
+            });
+        this.municipalitiesService.municipalities$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (municipalities: Feature[]) => {
+                    this.mapperLimits.municipios = municipalities.map((feat) => {
+                        feat.properties['TITULO'] = fixEncoding( feat.properties['TITULO']);
+                        return feat;
+                    });
+                }
+            });
+
         this.translocoService.langChanges$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
@@ -215,10 +266,84 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
     handlePoint(evt): void{
-        console.log(evt);
+
+        let point = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4674');
+        console.log("coord - " , point);
+
+        this.updateActiveLayers();
+
+        this.displayFeatureInfo = {coordinate: point}
+
+        const foundKey = Object.keys(this.mapperLimits).find(key => key.includes(this.activeLimit.Name.split('teeb:camada_')[1]));
+
+        if(this.activeLimit.Name.includes('camada_br')){
+            const properties = this.mapperLimits[foundKey][0].properties
+            this.displayFeatureInfo = Object.assign(this.displayFeatureInfo, this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
+
+            console.log("display - " , this.displayFeatureInfo)
+        }
+        else {
+            this.wfsService.getPointInfo(this.activeLimit.Name, point).subscribe(
+                feature => {
+                    if (feature) {
+                        const matchedMapperLimit = this.mapperLimits[foundKey].find(limit => limit.id === feature.id);
+                        console.log("MML - " , matchedMapperLimit)
+
+                        const properties = matchedMapperLimit.properties
+
+                        this.displayFeatureInfo = Object.assign(this.displayFeatureInfo, this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
+
+                        console.log("display - " , this.displayFeatureInfo)
+                    } else {
+                        console.log('No feature intersected at the point');
+                    }
+                },
+                error => {
+                    console.error('An error occurred:', error);
+                }
+            );
+        }
+
     }
 
-    // async onDisplayFeatureInfo(pixel: Pixel, evt: MapEvent) {
+    findMatchingProperties(keywordLists: any[], propertyObject: any): any {
+        const result = {
+            TITULO: propertyObject.SIGLA_UF ? `${propertyObject.TITULO} - ${propertyObject.SIGLA_UF}` : propertyObject.TITULO,
+            AREA_KM2: propertyObject.AREA_KM2 ? propertyObject.AREA_KM2 : null
+        };
+
+        console.log("key - ", keywordLists)
+        console.log("prop - ", propertyObject)
+
+        keywordLists.forEach((keyword) => {
+            if (propertyObject.hasOwnProperty(keyword)) {
+                // Add the matching property name and its value to the result object.
+                result[keyword] = propertyObject[keyword];
+            }
+        });
+
+        return result;
+    }
+
+    updateActiveLayers(){
+        this.limitsService.limits$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    this.activeLimit = layers.find(l => l.visible);
+                }
+            });
+        this.layersService.layers$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    this.activeLayers = layers.filter(l => l.visible && !l.Name.includes('teeb:camada'));
+                }
+            });
+    }
+
+    // async onDisplayFeatureInfo(pixel: Pixel, evt: MapBrowserEvent<any>) {
+
     //     if (this.lastSelected != null && this.lastSelected !== this.selecao.nativeElement) {
     //         // Não apresenta as informações se houver uma ferramenta ativa que não seja a específica de seleção.
     //         return;

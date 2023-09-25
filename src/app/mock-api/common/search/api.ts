@@ -56,7 +56,6 @@ export class SearchMockApi implements OnDestroy {
                         feat.properties['TITULO'] = fixEncoding( feat.properties['TITULO']);
                         return feat;
                     });
-                    console.log(this.municipalities);
                 }
             });
     }
