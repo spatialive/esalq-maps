@@ -8,6 +8,9 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatTableModule} from '@angular/material/table';
+import {MatSortModule} from '@angular/material/sort';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 export const statisticsModules = [
     CommonModule,
@@ -21,6 +24,9 @@ export const statisticsModules = [
     MatSelectModule,
     MatChipsModule,
     MatDialogModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule
 ];
 

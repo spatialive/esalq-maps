@@ -7,5 +7,11 @@ export const escape = (str): string => {
         return hex.length === 2 ? '%'+hex : '%u00'+hex;
     });
 };
-export const fixEncoding = (str: string): string => decodeURIComponent(escape(str));
+export const fixEncoding = (str: string): string => {
+    try {
+        return decodeURIComponent(escape(str));
+    }catch (e){
+        return str;
+    }
+};
 

@@ -1,8 +1,8 @@
 <div class="relative flex flex-col w-full h-full">
     <h2 class="prose lg:prose-xl" mat-dialog-title >{{data.title}}</h2>
-    <div class="flex flex-row" mat-dialog-content>
+    <div class="flex flex-row">
         <mat-form-field class="basis-1/2">
-            <mat-label>Temática(s)</mat-label>
+            <mat-label>Temáticas para: {{currentLimit.Title}}</mat-label>
             <mat-select [formControl]="themesSeleted" multiple placeholder="Escolha a Temática">
                 <mat-option *ngFor="let theme of themes" [value]="theme">
                     <strong class="mr-2">{{theme.label}}</strong>
@@ -10,7 +10,7 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field class="basis-1/2 ml-3">
+        <mat-form-field *ngIf="currentLimit.Name === 'teeb:camada_municipios'" class="basis-1/2 ml-3">
             <mat-label>Estados</mat-label>
             <mat-select [formControl]="statesSeleted" multiple placeholder="Escolha o estado">
                 <mat-option *ngFor="let state of states" [value]="state">
@@ -19,6 +19,36 @@
             </mat-select>
         </mat-form-field>
     </div>
+    <div mat-dialog-content>
+        <div>
+            <table mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8 w-full mb-4">
+                <ng-container *ngFor="let theme of themesTable" [matColumnDef]="theme.id">
+                    <th mat-header-cell mat-sort-header *matHeaderCellDef> {{theme.label}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element[theme.id]}} </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+    </div>
+    <mat-toolbar class="w-full mt-2">
+        <mat-toolbar-row>
+            <div class="flex">
+                <button class="mr-2" mat-raised-button color="accent" [matTooltip]="'Exportar XLSX'" (click)="exportToXLS()">
+                    <mat-icon>table_view</mat-icon>
+                </button>
+
+                <button class="mr-2" mat-raised-button color="primary" [matTooltip]="'Exportar JSON'" (click)="exportToJSON()">
+                    <mat-icon>description</mat-icon>
+                </button>
+
+                <button mat-raised-button color="warn" [matTooltip]="'Exportar CSV'" (click)="exportToCSV()">
+                    <mat-icon>grid_on</mat-icon>
+                </button>
+            </div>
+            <mat-paginator #paginator [pageSize]="25" [pageSizeOptions]="[2, 5, 10, 25, 100]"></mat-paginator>
+        </mat-toolbar-row>
+    </mat-toolbar>
     <div mat-dialog-actions align="end" class="mt-auto">
         <button mat-flat-button (click)="close()" cdkFocusInitial>Fechar</button>
     </div>
