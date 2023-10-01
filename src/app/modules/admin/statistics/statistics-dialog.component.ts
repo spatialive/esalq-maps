@@ -10,9 +10,8 @@ import {
 } from '@angular/core';
 import {
     BiomesService,
-    CountryService,
+    CountryService, exportToCSV, exportToJSON, exportToXLS,
     Feature,
-    fixEncoding,
     Layer,
     LimitsService,
     MunicipalitiesService,
@@ -160,61 +159,15 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         this.getThemes();
     }
     exportToXLS(): void {
-        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.dataSource.data);
-        const at: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.themes);
-        const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'dados');
-        XLSX.utils.book_append_sheet(wb, at, 'metadados');
-        XLSX.writeFile(wb, `${this.currentLimit.Name}_dados.xlsx`);
+        exportToXLS(this.dataSource, this.themes, this.currentLimit.Name);
     }
     exportToJSON(): void {
-        const dataStr = JSON.stringify(this.dataSource.data);
-        const blob = new Blob([dataStr], { type: 'text/json;charset=utf-8;' });
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.setAttribute('download', `${this.currentLimit.Name}_dados.json`);
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        exportToJSON(this.dataSource, this.currentLimit.Name);
     }
+
     exportToCSV(): void {
-        const csvData = this.convertToCSV(this.dataSource.data);
-        const blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        // eslint-disable-next-line eqeqeq
-        const isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
-
-        // if Safari open in new window to save file with random filename.
-        if (isSafariBrowser) {
-            link.setAttribute('target', '_blank');
-        }
-        link.setAttribute('href', url);
-        link.setAttribute('download', `${this.currentLimit.Name}_dados.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        exportToCSV(this.dataSource, this.currentLimit.Name);
     }
-
-    convertToCSV(objArray: any[]): string {
-        const array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
-        let str = '';
-
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let i = 0; i < array.length; i++) {
-            let line = '';
-            // eslint-disable-next-line guard-for-in
-            for (const index in array[i]) {
-                if (line !== '') {line += ',';}
-
-                line += array[i][index];
-            }
-            str += line + '\r\n';
-        }
-        return str;
-    }
-
     fillTable(): void {
         this.fuseLoadingService.show();
         this.themesTable = [...this.themesFixed, ...this.themesSeleted.value];

@@ -1,4 +1,17 @@
-export const normalize = (value: string): string => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+export const normalize = (value: string, noWhiteSpace: boolean = false): string => {
+    if(noWhiteSpace){
+        return value
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/\s/g, '_')
+            .replace(/[\u0300-\u036f]/g, '');
+    } else {
+        return value
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+};
 
 export const escape = (str): string => {
     const nonAsciiPattern = /[^\x00-\x7F]/g;

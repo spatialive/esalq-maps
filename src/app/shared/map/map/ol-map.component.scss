@@ -11,6 +11,22 @@
     position: relative;
 }
 
+:host ::ng-deep .legend{
+    z-index: 101 !important;
+    position: absolute !important;
+    bottom: 30px;
+    right: 10px;
+    width: 280px;
+    height: 280px;
+    overflow-x: auto;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 50%);
+    .legend-img{
+        max-width: 60%;
+    }
+}
+
 @include media('>=phone', '<=tablet') {
 
 }

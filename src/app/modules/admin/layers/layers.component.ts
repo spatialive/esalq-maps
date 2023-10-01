@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {Tile as TileLayer} from 'ol/layer';
 import {XYZ, TileWMS} from 'ol/source';
-import {Subject, take, takeUntil} from 'rxjs';
+import {Observable, Subject, take, takeUntil} from 'rxjs';
 import {
     Layer,
     BiomesService,
@@ -19,7 +19,7 @@ import {
     LimitsService,
     MunicipalitiesService,
     StatesService, Feature,
-    WfsService, setHighestZIndex, fixEncoding, Theme
+    WfsService, setHighestZIndex, fixEncoding, Theme, exportToXLS, exportToJSON, exportToCSV, normalize
 } from '../../../shared';
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
@@ -50,9 +50,11 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort) matSort!: MatSort;
 
     public layers: any[] = [];
+    public legends: Layer[] = [];
     public map: Map;
     public displayFeatureInfo: any = {};
     public extentOptions: any;
+    public currentLimit: Layer;
     public featureLayer: VectorLayer<VectorSource>;
     public overlay: Overlay;
     public feature: OlFeature;
@@ -125,6 +127,13 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.getThemes();
     }
     subscriptions(): void{
+        this.limitsService.limits$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    this.currentLimit = layers.find(l => l.visible);
+                }
+            });
         this.layersService.layers$
             .pipe(take(1))
             .pipe(takeUntil(this.unsubscribeAll))
@@ -218,6 +227,21 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 }
             });
+        this.layersService.layers$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (layers) => {
+                    const newLegends = [];
+
+                    layers.forEach((lay) => {
+                        if (lay.visible && !lay.Name.includes('teeb:camada')) {
+                            newLegends.push(lay);
+                        }
+                    });
+
+                    this.legends = newLegends;
+                }
+            });
     }
     handleLayers(layers: Layer[]): void {
         if(Array.isArray(layers)){
@@ -229,6 +253,11 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
     addFeatureToMap(feature: Feature, fromSearch: boolean = false): void{
+        if(this.featureLayer){
+            this.removeFeatureFromMap();
+            this.dataSource = null;
+            this.hidePopup();
+        }
         this.feature = this.jsonToFeature(feature);
         this.featureLayer.getSource().addFeature(this.feature);
         const extent = this.feature.getGeometry().getExtent();
@@ -243,7 +272,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     addLayers(layers: Layer[]): void {
         if (Array.isArray(layers)) {
-            layers.forEach((lay) => {
+            layers.forEach((lay: Layer) => {
                 const tileLayer: TileLayer<TileWMS> = new TileLayer({
                     visible: lay.visible,
                     source: new TileWMS({
@@ -330,21 +359,32 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.addOverlay(this.overlay);
     }
     showPopup(evt, feature): void{
-        const coordinates = evt.coordinate;
-        this.overlay.setPosition(coordinates);
         this.addFeatureToMap(feature);
         this.createInfoTable();
+        const coordinates = evt.coordinate;
+        this.overlay.setPosition(coordinates);
+    }
+    toXLS(): void {
+        exportToXLS(this.dataSource, null, normalize(this.displayFeatureInfo?.TITULO, true));
+    }
+    toJSON(): void {
+        exportToJSON(this.dataSource, normalize(this.displayFeatureInfo?.TITULO, true));
+    }
+
+    toCSV(): void {
+        exportToCSV(this.dataSource, normalize(this.displayFeatureInfo?.TITULO, true));
     }
     createInfoTable(): void {
         const info = {...this.displayFeatureInfo};
         delete info['TITULO'];
         delete info['coordinate'];
         const dados: any [] = Object.entries(info).map((item) => {
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             const theme = this.themes.find(theme => theme.id === item[0]);
             return {
                 label: theme['label'],
                 value: item[1],
-                description: theme['descricao']
+                description: theme['description']
             };
         });
         this.dataSource = new MatTableDataSource<any>(dados);
@@ -444,252 +484,6 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
     }
-
-    // async onDisplayFeatureInfo(pixel: Pixel, evt: MapBrowserEvent<any>) {
-
-    //     if (this.lastSelected != null && this.lastSelected !== this.selecao.nativeElement) {
-    //         // Não apresenta as informações se houver uma ferramenta ativa que não seja a específica de seleção.
-    //         return;
-    //     }
-    //
-    //     if (this.lastInfo != null) {
-    //         this.map.removeOverlay(this.lastInfo);
-    //         this.lastInfo = null;
-    //     }
-    //
-    //     const tipoCoordenada = this.tipoCoordenadas.value;
-    //     const features = new Array<Feature>();
-    //     const text: Element[] = new Array<Element>();
-    //
-    //     const sources: TileWMS[] = this.map.getLayers().getArray().filter(layer => layer.getSource() instanceof TileWMS);
-    //     for (const layer of sources) {
-    //         if (!layer.getVisible()) {
-    //             continue;
-    //         }
-    //
-    //         const div = document.createElement('div');
-    //         div.innerHTML = 'Carregando...';
-    //         text.push(div);
-    //
-    //         const url = layer.getSource().getFeatureInfoUrl(
-    //             evt.coordinate,
-    //             this.map.getView().getResolution(),
-    //             'EPSG:4674',
-    //             {
-    //                 INFO_FORMAT: 'application/json'
-    //             }
-    //         )
-    //
-    //         this.httpClient.get<Camada[]>(`${this.env.URL_GEOPORTAL_BASE_REFERENCIA}/api/camadas/featureInfo`, {
-    //             responseType: 'json',
-    //             params: {
-    //                 url: url
-    //             }
-    //         }).subscribe((ret: any) => {
-    //             div.innerHTML = '';
-    //             ret.forEach(item => {
-    //                 const properties = item.properties;
-    //                 Object.keys(properties).forEach((property: string) => {
-    //                     if (property !== 'geometry') {
-    //                         let valor = properties[property];
-    //                         if (valor instanceof Date) {
-    //                             valor = [valor.getDate(), valor.getMonth() + 1, valor.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/');
-    //                         }
-    //                         div.innerHTML += `<p><strong>${property.replace(/_/g, ' ')}:</strong> ${tentaResolverProblemaEncoding(valor) || ''}</p>`;
-    //                     }
-    //                 });
-    //             });
-    //         }, error => {
-    //             if (error.status === 0) {
-    //                 this.snackBarService.showError('Sistema de informações de ponto indisponível')
-    //             } else {
-    //                 this.snackBarService.showError(error.error || error.message)
-    //                 div.innerHTML = '';
-    //             }
-    //         });
-    //     }
-    //
-    //     const geometrias: GeometriaMapa[] = this.getGeometriaCamadas();
-    //
-    //     this.map.forEachFeatureAtPixel(pixel, feature => features.push(feature));
-    //
-    //     for (const feature of features) {
-    //         // Não apresentar as informações se for a régua.
-    //         if (!feature.regua) {
-    //             const geometria = geometrias.find(g => g.feature === feature);
-    //             const properties = {...(geometria && geometria.propriedades), ...feature.getProperties() || feature.properties};
-    //
-    //             if (properties) {
-    //                 if (feature.id_) {
-    //                     properties.id = feature.id_;
-    //                 }
-    //
-    //                 Object.keys(properties).forEach((property: string) => {
-    //                     if (property !== 'geometry') {
-    //                         let valor = properties[property];
-    //                         if (valor) {
-    //                             if (valor instanceof Date) {
-    //                                 valor = [valor.getDate(), valor.getMonth() + 1, valor.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/');
-    //                             }
-    //                             const div = document.createElement('div');
-    //                             div.innerHTML = `<p><strong>${property.replace(/_/g, ' ')}:</strong> ${valor || ''}</p>`;
-    //                             text.push(div);
-    //                         }
-    //                     }
-    //                 });
-    //             }
-    //
-    //             let coordinate: Coordinate;
-    //             const geometry: Polygon = feature.getGeometry() || feature.geometry;
-    //             if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
-    //                 if (text.length !== 0) {
-    //                     text.push(document.createElement('hr'));
-    //                 }
-    //
-    //                 const div = document.createElement('div');
-    //                 const area = await this.areaGeometriaService.getArea(geometry).toPromise()
-    //
-    //                 div.innerHTML = `<p><strong>Área: </strong> ${area}</p>`;
-    //
-    //                 text.push(div);
-    //
-    //                 coordinate = geometry.getInteriorPoint().getCoordinates();
-    //             } else if (geometry instanceof Point) {
-    //                 coordinate = toLonLat(geometry.getCoordinates(), this.map.getView().getProjection());
-    //             } else {
-    //                 coordinate = toLonLat(evt.coordinate, this.map.getView().getProjection());
-    //             }
-    //
-    //             if (coordinate != null) {
-    //                 let valor: string;
-    //                 if (tipoCoordenada === '1') {
-    //                     const formatado: string[] = this.formataCoordenada(coordinate).split(', ');
-    //
-    //                     if (text.length > 0) {
-    //                         text.push(document.createElement('hr'));
-    //                     }
-    //                     valor = `<p><strong>Latitude:</strong> ${formatado[1]}</p>
-    //                             <p class="latitude"><strong>Longitude:</strong> ${formatado[0]}</p>`;
-    //                 } else {
-    //                     valor = `<p class="latitude" ><strong>Coordenadas:</strong> ${toStringHDMS(coordinate, 4)}</p>`;
-    //                 }
-    //
-    //                 const div = document.createElement('div');
-    //                 div.innerHTML = valor;
-    //                 text.push(div);
-    //             }
-    //             if (geometria && ((geometria.extraOptions && geometria.extraOptions.length) || ((geometria.permissao && geometria.permissao.editar)))) {
-    //                 const div = document.createElement('div');
-    //                 div.style.marginTop = '10px';
-    //                 div.style.textAlign = 'right';
-    //                 div.style.whiteSpace = 'nowrap';
-    //
-    //                 if (geometria.extraOptions) {
-    //                     geometria.extraOptions.forEach(option => {
-    //                         const span = document.createElement('span');
-    //                         span.className = 'mat-button-wrapper';
-    //
-    //                         if (option.icon) {
-    //                             const icon = document.createElement('mat-icon');
-    //                             icon.className = 'mat-icon notranslate material-icons mat-icon-no-color';
-    //                             icon.setAttribute('role', 'img');
-    //                             icon.innerText = option.icon;
-    //                             span.appendChild(icon);
-    //                         }
-    //
-    //                         span.appendChild(document.createTextNode(' ' + option.text));
-    //                         const button = document.createElement('button');
-    //                         button.style.marginLeft = '10px';
-    //                         if (option.callback) {
-    //                             button.addEventListener('click', (_) => {
-    //                                 option.callback(geometria);
-    //                             });
-    //                         }
-    //                         button.appendChild(span);
-    //                         button.className = 'mat-raised-button mat-secondary';
-    //                         div.appendChild(button);
-    //
-    //                         text.push(div);
-    //                     });
-    //                 }
-    //
-    //                 if (geometria.permissao && geometria.permissao.editar) {
-    //                     const button = document.createElement('button');
-    //                     button.addEventListener('click', (_) => {
-    //                         this.showProgressBar = true;
-    //                         this.editFeature.emit(geometria);
-    //                         this.showProgressBar = false;
-    //                     });
-    //
-    //                     const span = document.createElement('span');
-    //                     span.className = 'mat-button-wrapper';
-    //
-    //                     const icon = document.createElement('mat-icon');
-    //                     icon.className = 'mat-icon notranslate material-icons mat-icon-no-color';
-    //                     icon.setAttribute('role', 'img');
-    //                     icon.innerText = 'edit';
-    //                     span.appendChild(icon);
-    //
-    //                     span.appendChild(document.createTextNode(' Editar atributos'));
-    //                     button.style.marginLeft = '10px';
-    //                     button.appendChild(span);
-    //                     button.className = 'mat-raised-button mat-primary';
-    //
-    //                     div.appendChild(button);
-    //                     text.push(div);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //
-    //     if (features.length === 0) {
-    //         const coordinate = toLonLat(evt.coordinate, this.map.getView().getProjection());
-    //         let valor: string;
-    //         if (this.tipoCoordenadas.value === '1') {
-    //             const formatado: string[] = this.formataCoordenada(coordinate).split(', ');
-    //
-    //             if (text.length > 0) {
-    //                 text.push(document.createElement('hr'));
-    //             }
-    //             valor = `<p><strong>Latitude:</strong> ${formatado[1]}</p>
-    //                      <p class="latitude"><strong>Longitude:</strong> ${formatado[0]}</p>`;
-    //         } else {
-    //             valor = `<p class="latitude"><strong>Coordenadas:</strong> ${toStringHDMS(coordinate, 4)}</p>`;
-    //         }
-    //         const div = document.createElement('div');
-    //         div.innerHTML = valor;
-    //
-    //         text.push(div);
-    //     }
-    //
-    //     if (text.length !== 0) {
-    //         const closer = document.createElement('span');
-    //         closer.className = 'ol-popup-closer';
-    //
-    //         const toolTip = document.createElement('div');
-    //         toolTip.className = 'ol-popup ol-popup-info';
-    //         toolTip.appendChild(closer);
-    //         text.forEach(e => toolTip.appendChild(e));
-    //
-    //         // Não adiciona o offset da popup se não houver uma feature.
-    //         const offset = features.length === 0 ? 0 : -15;
-    //         this.lastInfo = new Overlay({
-    //             element: toolTip,
-    //             offset: [0, offset],
-    //             positioning: 'bottom-center',
-    //         });
-    //
-    //         this.lastInfo.setPosition(evt.coordinate);
-    //         this.addOverlay(this.lastInfo);
-    //
-    //         closer.addEventListener('click', () => {
-    //             if (this.lastInfo != null) {
-    //                 this.map.removeOverlay(this.lastInfo);
-    //                 this.lastInfo = null;
-    //             }
-    //         });
-    //     }
-    // }
     jsonToFeature(geojsonFeature: Feature): OlFeature {
         const format = new GeoJSON();
         return format.readFeature(geojsonFeature, {

@@ -11,11 +11,20 @@
             <ol-control class="mobileHide" control="FullScreen"></ol-control>
             <ol-control class="mobileHide" control="scaleline"></ol-control>
             <ol-layer *ngFor="let layer of layers" [layer]="layer"></ol-layer>
+            <div *ngIf="legends.length > 0" class="legend flex flex-col p-2">
+                <div class="text-md text-center w-full font-bold mt-2 mb-2">Legenda(s)</div>
+                <span class="mat-elevation-z2" *ngFor="let legend of legends">
+                    <div class="flex flex-col p-1 ">
+                        <div class="text-md text-center w-full font-bold mt-2 mb-2">{{legend.Title}}</div>
+                        <img class="legend-img" [src]="legend.Style[0].LegendURL[0].OnlineResource" [alt]="legend.Title">
+                    </div>
+                </span>
+            </div>
         </ol-map>
     </div>
 </div>
 
-<fuse-card *ngIf="displayFeatureInfo" id="overlay" class=" ol-popup min-w-140 flex p-2">
+<fuse-card *ngIf="displayFeatureInfo" id="overlay" class=" ol-popup min-w-min flex p-2">
     <div class="flex flex-col w-full">
         <div class="flex  justify-between">
             <div class="text-lg text-center w-full font-bold">{{displayFeatureInfo?.TITULO}}</div>
@@ -34,7 +43,10 @@
                 <ng-container [matColumnDef]="'label'">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>Dado</th>
                     <td mat-cell *matCellDef="let element">
-                       <span [innerHTML]="element.label"></span>
+                       <div class="flex flex-col">
+                           <strong>{{element.label}}</strong>
+                           <small>{{element.description}}</small>
+                       </div>
                     </td>
                 </ng-container>
                 <ng-container [matColumnDef]="'value'">
@@ -47,13 +59,26 @@
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
             </table>
-            <mat-toolbar class="w-full mt-2">
+            <mat-paginator class="flex" #paginator [pageSize]="3" [pageSizeOptions]="[2, 3, 5, 10, 25, 100]"></mat-paginator>
+            <mat-toolbar class="w-full">
                 <mat-toolbar-row class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="flex mb-2 md:mb-0" *ngIf="displayFeatureInfo?.coordinate">
-                        <span>Ponto: {{displayFeatureInfo?.coordinate[1].toFixed(4)}}, {{displayFeatureInfo?.coordinate[0].toFixed(4)}}</span>
+                    <div class="flex items-center justify-between">
+                        <div *ngIf="displayFeatureInfo?.coordinate">
+                            <small>Ponto: {{displayFeatureInfo?.coordinate[1].toFixed(4)}}, {{displayFeatureInfo?.coordinate[0].toFixed(4)}}</small>
+                        </div>
+                        <button class="ml-4 mr-2" mat-raised-button color="accent" [matTooltip]="'Exportar XLSX'" (click)="toXLS()">
+                            <mat-icon>table_view</mat-icon>
+                        </button>
+
+                        <button class="mr-2" mat-raised-button color="primary" [matTooltip]="'Exportar JSON'" (click)="toJSON()">
+                            <mat-icon>description</mat-icon>
+                        </button>
+                        <button mat-raised-button color="warn" [matTooltip]="'Exportar CSV'" (click)="toCSV()">
+                            <mat-icon>grid_on</mat-icon>
+                        </button>
                     </div>
-                    <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[2, 5, 10, 25, 100]"></mat-paginator>
                 </mat-toolbar-row>
             </mat-toolbar>
         </div>
