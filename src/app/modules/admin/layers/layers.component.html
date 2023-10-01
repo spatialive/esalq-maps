@@ -15,17 +15,26 @@
     </div>
 </div>
 
-<fuse-card *ngIf="displayFeatureInfo" id="overlay" class=" ol-popup min-w-100 flex p-2">
+<fuse-card *ngIf="displayFeatureInfo" id="overlay" class=" ol-popup min-w-140 flex p-2">
     <div class="flex flex-col w-full">
-        <div class="text-lg font-bold">{{displayFeatureInfo?.TITULO}}</div>
-        <div class="mt-2">
+        <div class="flex  justify-between">
+            <div class="text-lg text-center w-full font-bold">{{displayFeatureInfo?.TITULO}}</div>
+            <button
+                mat-icon-button
+                [color]="'primary'"
+                (click)="hidePopup()">
+                <mat-icon
+                    class="icon-size-5"
+                    [svgIcon]="'mat_outline:close'"></mat-icon>
+            </button>
+        </div>
+
+        <div class="mt-2 justify-center">
             <table mat-table matSort [dataSource]="dataSource" class="mat-elevation-z2 w-full">
                 <ng-container [matColumnDef]="'label'">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>Dado</th>
                     <td mat-cell *matCellDef="let element">
-                       <span>
-                           <span> {{element.label}} </span>
-                       </span>
+                       <span [innerHTML]="element.label"></span>
                     </td>
                 </ng-container>
                 <ng-container [matColumnDef]="'value'">
@@ -39,22 +48,14 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-        </div>
-        <div class="flex flex-col justify-between mt-2 sm:flex-row sm:items-center ">
-            <div class="flex items-center" *ngIf="displayFeatureInfo?.coordinate">
-                <span>Latitude: {{displayFeatureInfo?.coordinate[1].toFixed(4)}}, Longitude: {{displayFeatureInfo?.coordinate[0].toFixed(4)}}</span>
-            </div>
-            <div class="flex items-center">
-                <button
-                    mat-icon-button
-                    [color]="'primary'"
-                    (click)="hidePopup()">
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'mat_outline:close'"></mat-icon>
-                </button>
-            </div>
+            <mat-toolbar class="w-full mt-2">
+                <mat-toolbar-row class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex mb-2 md:mb-0" *ngIf="displayFeatureInfo?.coordinate">
+                        <span>Ponto: {{displayFeatureInfo?.coordinate[1].toFixed(4)}}, {{displayFeatureInfo?.coordinate[0].toFixed(4)}}</span>
+                    </div>
+                    <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[2, 5, 10, 25, 100]"></mat-paginator>
+                </mat-toolbar-row>
+            </mat-toolbar>
         </div>
     </div>
 </fuse-card>
-

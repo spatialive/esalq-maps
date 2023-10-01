@@ -18,6 +18,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from "@angular/material/table";
 import {SharedModule} from "../../../shared/shared.module";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatToolbarModule} from "@angular/material/toolbar";
 
 const datasetRoutes: Route[] = [
     {
@@ -47,7 +49,9 @@ const datasetRoutes: Route[] = [
         MatButtonToggleModule,
         MatSortModule,
         MatTableModule,
-        SharedModule
+        SharedModule,
+        MatPaginatorModule,
+        MatToolbarModule
     ],
     exports: [
         LayersComponent

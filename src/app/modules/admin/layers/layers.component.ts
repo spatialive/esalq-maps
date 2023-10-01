@@ -34,7 +34,9 @@ import {SearchMunicipalityState} from '../../../shared/states/search-municipalit
 import {Feature as OlFeature} from 'ol';
 import {MatTableDataSource} from '@angular/material/table';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
     selector: 'layers',
@@ -44,6 +46,8 @@ import {HttpClient} from "@angular/common/http";
 })
 export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('containerMap') containerMap: ElementRef;
+    @ViewChild('paginator') paginator!: MatPaginator;
+    @ViewChild(MatSort) matSort!: MatSort;
 
     public layers: any[] = [];
     public map: Map;
@@ -336,9 +340,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         delete info['TITULO'];
         delete info['coordinate'];
         const dados: any [] = Object.entries(info).map((item) => {
-            console.log(item, this.themes);
             const theme = this.themes.find(theme => theme.id === item[0]);
-            console.log(theme)
             return {
                 label: theme['label'],
                 value: item[1],
@@ -346,7 +348,8 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             };
         });
         this.dataSource = new MatTableDataSource<any>(dados);
-        console.log(dados);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.matSort;
     }
     getThemes(lang: string = 'pt'): void {
         this.fuseLoadingService.show();

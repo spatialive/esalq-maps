@@ -11,7 +11,7 @@
     "extent_lable": "Adaptar à extensão",
     "variaveis_camadas_vetoriais": {
         "AREA_KM2": {
-            "label": "Área (km\\u00b2)",
+            "label": "Área (km2)",
             "descricao": "Área da região selecionada em quilometros quadrados."
         },
         "BAU_AGR": {
