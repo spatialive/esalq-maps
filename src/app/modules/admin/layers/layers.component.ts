@@ -18,15 +18,23 @@ import {
     LayersService,
     LimitsService,
     MunicipalitiesService,
-    StatesService,
-    WfsService, setHighestZIndex, Feature, fixEncoding
+    StatesService, Feature,
+    WfsService, setHighestZIndex, fixEncoding, Theme
 } from '../../../shared';
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
-import {TranslocoService} from "@ngneat/transloco";
-import {FuseMediaWatcherService} from "../../../../@fuse/services/media-watcher";
-import {Pixel} from "ol/pixel";
-import {toLonLat, transform, transformExtent} from 'ol/proj';
+import {Translation, TranslocoService} from '@ngneat/transloco';
+import {FuseMediaWatcherService} from '../../../../@fuse/services/media-watcher';
+import {transform} from 'ol/proj';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Overlay from 'ol/Overlay';
+import GeoJSON from 'ol/format/GeoJSON';
+import {SearchMunicipalityState} from '../../../shared/states/search-municipality.state';
+import {Feature as OlFeature} from 'ol';
+import {MatTableDataSource} from '@angular/material/table';
+import {FuseLoadingService} from '../../../../@fuse/services/loading';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
     selector: 'layers',
@@ -39,16 +47,20 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public layers: any[] = [];
     public map: Map;
+    public displayFeatureInfo: any = {};
     public extentOptions: any;
-
+    public featureLayer: VectorLayer<VectorSource>;
+    public overlay: Overlay;
+    public feature: OlFeature;
+    public displayedColumns: string[] = ['label', 'value'];
+    public dataSource!: MatTableDataSource<any>;
     protected mapWidth: number;
     protected mapHeight: number;
     private unsubscribeAll: Subject<any> = new Subject<any>();
     private activeLimit: any;
-    private activeLayers: any[] = []
+    private activeLayers: any[] = [];
     private mapperLimits: any;
-
-    public displayFeatureInfo: any = {};
+    private themes: any[];
 
 
     /**
@@ -62,9 +74,12 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly biomesService: BiomesService,
         private readonly statesService: StatesService,
         private readonly municipalitiesService: MunicipalitiesService,
+        private readonly searchMunicipalityState: SearchMunicipalityState,
         private readonly wfsService: WfsService,
+        private readonly _http: HttpClient,
         private readonly translocoService: TranslocoService,
         private readonly fuseMediaWatcherService: FuseMediaWatcherService,
+        private readonly fuseLoadingService: FuseLoadingService,
     ) {
         this.layers = [];
     }
@@ -103,8 +118,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             biomas: [],
             br: []
         };
-
-
+        this.getThemes();
     }
     subscriptions(): void{
         this.layersService.layers$
@@ -134,7 +148,6 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.handleLayers(layers);
                 }
             });
-
         this.countryService.country$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
@@ -182,6 +195,25 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     // this.isScreenSmall = !matchingAliases.includes('md');
                 }
             });
+        this.searchMunicipalityState.codigo$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (codigo) => {
+                    if(codigo !== 'remove'){
+                        this.municipalitiesService.getFeature(codigo).subscribe({
+                            next: (featureJson) => {
+                                if(featureJson){
+                                    this.addFeatureToMap(featureJson, true);
+                                }
+                            }
+                        });
+                    } else {
+                        if(codigo) {
+                            this.removeFeatureFromMap();
+                        }
+                    }
+                }
+            });
     }
     handleLayers(layers: Layer[]): void {
         if(Array.isArray(layers)){
@@ -191,6 +223,19 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             }
         }
+    }
+    addFeatureToMap(feature: Feature, fromSearch: boolean = false): void{
+        this.feature = this.jsonToFeature(feature);
+        this.featureLayer.getSource().addFeature(this.feature);
+        const extent = this.feature.getGeometry().getExtent();
+        this.map.getView().fit(extent, { duration: 500 });
+        if(fromSearch){
+            this.limitsService.updateLimitVisibility('teeb:camada_municipios', true);
+        }
+    }
+    removeFeatureFromMap(): void {
+        this.featureLayer.getSource().removeFeature(this.feature);
+        this.map.getView().setZoom(2.8);
     }
     addLayers(layers: Layer[]): void {
         if (Array.isArray(layers)) {
@@ -264,68 +309,123 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     }, 1000);
                 }
             });
+        this.featureLayer = new VectorLayer({
+            source: new VectorSource(),
+            map: this.map,
+            style: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'stroke-color': 'rgba(255, 255, 255, 0.7)', 'stroke-width': 2,
+            },
+        });
+        this.overlay = new Overlay({
+            element: document.getElementById('overlay'),
+            positioning: 'bottom-center',
+            stopEvent: true,
+            offset: [0, -10]
+        });
+        this.map.addOverlay(this.overlay);
+    }
+    showPopup(evt, feature): void{
+        const coordinates = evt.coordinate;
+        this.overlay.setPosition(coordinates);
+        this.addFeatureToMap(feature);
+        this.createInfoTable();
+    }
+    createInfoTable(): void {
+        const info = {...this.displayFeatureInfo};
+        delete info['TITULO'];
+        delete info['coordinate'];
+        const dados: any [] = Object.entries(info).map((item) => {
+            console.log(item, this.themes);
+            const theme = this.themes.find(theme => theme.id === item[0]);
+            console.log(theme)
+            return {
+                label: theme['label'],
+                value: item[1],
+                description: theme['descricao']
+            };
+        });
+        this.dataSource = new MatTableDataSource<any>(dados);
+        console.log(dados);
+    }
+    getThemes(lang: string = 'pt'): void {
+        this.fuseLoadingService.show();
+        this._http.get<Translation>(`${environment.langUrl}/assets/i18n/${lang}.json`)
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (translation) => {
+                    this.themes = Object.entries(translation['variaveis_camadas_vetoriais'])
+                        .map((item): Theme => ({
+                            id: item[0],
+                            label: item[1]['label'],
+                            description: item[1]['descricao']
+                        }));
+                    this.themes.sort((a, b) => a.label.localeCompare(b.label));
+                    this.fuseLoadingService.hide();
+                }, error: () => this.fuseLoadingService.hide()
+            });
+    }
+    hidePopup(): void {
+        this.overlay.setPosition(undefined);
+        this.removeFeatureFromMap();
     }
     handlePoint(evt): void{
 
-        let point = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4674');
-        console.log("coord - " , point);
-
+        const point = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4674');
         this.updateActiveLayers();
 
-        this.displayFeatureInfo = {coordinate: point}
+        this.displayFeatureInfo = {coordinate: point};
 
         const foundKey = Object.keys(this.mapperLimits).find(key => key.includes(this.activeLimit.Name.split('teeb:camada_')[1]));
 
         if(this.activeLimit.Name.includes('camada_br')){
-            const properties = this.mapperLimits[foundKey][0].properties
+            const properties = this.mapperLimits[foundKey][0].properties;
             this.displayFeatureInfo = Object.assign(this.displayFeatureInfo, this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
-
-            console.log("display - " , this.displayFeatureInfo)
-        }
-        else {
-            this.wfsService.getPointInfo(this.activeLimit.Name, point).subscribe(
-                feature => {
+            this.countryService.getFeature().subscribe({
+                next: (feature) => {
+                    this.showPopup(evt, feature);
+                }
+            });
+        } else {
+            this.wfsService.getPointInfo(this.activeLimit.Name, point).subscribe({
+                next: (feature) => {
                     if (feature) {
                         const matchedMapperLimit = this.mapperLimits[foundKey].find(limit => limit.id === feature.id);
-                        console.log("MML - " , matchedMapperLimit)
-
-                        const properties = matchedMapperLimit.properties
-
-                        this.displayFeatureInfo = Object.assign(this.displayFeatureInfo, this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
-
-                        console.log("display - " , this.displayFeatureInfo)
+                        const properties = matchedMapperLimit.properties;
+                        this.displayFeatureInfo = Object.assign(
+                            this.displayFeatureInfo,
+                            this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
+                        this.showPopup(evt, feature);
                     } else {
+                        this.hidePopup();
                         console.log('No feature intersected at the point');
                     }
                 },
-                error => {
+                error: (error) => {
                     console.error('An error occurred:', error);
                 }
-            );
+            });
         }
 
     }
 
     findMatchingProperties(keywordLists: any[], propertyObject: any): any {
         const result = {
-            TITULO: propertyObject.SIGLA_UF ? `${propertyObject.TITULO} - ${propertyObject.SIGLA_UF}` : propertyObject.TITULO,
-            AREA_KM2: propertyObject.AREA_KM2 ? propertyObject.AREA_KM2 : null
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'TITULO': propertyObject.SIGLA_UF ? `${propertyObject.TITULO} - ${propertyObject.SIGLA_UF}` : propertyObject.TITULO,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'AREA_KM2': propertyObject.AREA_KM2 ? propertyObject.AREA_KM2 : null
         };
-
-        console.log("key - ", keywordLists)
-        console.log("prop - ", propertyObject)
-
         keywordLists.forEach((keyword) => {
             if (propertyObject.hasOwnProperty(keyword)) {
                 // Add the matching property name and its value to the result object.
                 result[keyword] = propertyObject[keyword];
             }
         });
-
         return result;
     }
 
-    updateActiveLayers(){
+    updateActiveLayers(): void{
         this.limitsService.limits$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
@@ -587,6 +687,13 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     //         });
     //     }
     // }
+    jsonToFeature(geojsonFeature: Feature): OlFeature {
+        const format = new GeoJSON();
+        return format.readFeature(geojsonFeature, {
+            dataProjection: 'EPSG:4674',
+            featureProjection: 'EPSG:3857'
+        });
+    }
     ngOnDestroy(): void {
         this.unsubscribeAll.next(null);
         this.unsubscribeAll.complete();

@@ -30,9 +30,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
-import {MatToolbarModule} from '@angular/material/toolbar';
 import * as XLSX from 'xlsx';
-import {MatTooltipModule} from '@angular/material/tooltip';
 
 @Component({
     selector: 'statistics-dialog',
@@ -41,9 +39,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-        ...statisticsModules,
-        MatToolbarModule,
-        MatTooltipModule,
+        ...statisticsModules
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
@@ -130,11 +126,8 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                 })
             )
             .subscribe({
-                next: (data) => {
-                    this.dados = data.map((feat) => {
-                        feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
-                        return feat;
-                    });
+                next: (dados) => {
+                    this.dados = dados;
                     this.fillTable();
                 }
             });
@@ -149,10 +142,7 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (states) => {
-                    this.states = states.map((feat) => {
-                        feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
-                        return feat;
-                    });
+                    this.states = states;
                     this.states.sort((a, b) => a.properties.TITULO.localeCompare(b.properties.TITULO));
 
                 }
@@ -190,21 +180,21 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
     exportToCSV(): void {
         const csvData = this.convertToCSV(this.dataSource.data);
         const blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
-        let dwldLink = document.createElement('a');
+        const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         // eslint-disable-next-line eqeqeq
         const isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
 
         // if Safari open in new window to save file with random filename.
         if (isSafariBrowser) {
-            dwldLink.setAttribute('target', '_blank');
+            link.setAttribute('target', '_blank');
         }
-        dwldLink.setAttribute('href', url);
-        dwldLink.setAttribute('download', `${this.currentLimit.Name}_dados.csv`);
-        dwldLink.style.visibility = 'hidden';
-        document.body.appendChild(dwldLink);
-        dwldLink.click();
-        document.body.removeChild(dwldLink);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${this.currentLimit.Name}_dados.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     convertToCSV(objArray: any[]): string {

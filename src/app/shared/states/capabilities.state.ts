@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {Layer} from '../interfaces/layer.interface';
+import {Layer} from '../interfaces';
 @Injectable({
     providedIn: 'root'
 })

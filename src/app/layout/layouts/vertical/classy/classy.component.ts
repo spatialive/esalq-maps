@@ -114,14 +114,10 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
     }
 
     openStatisticsDialog(): void {
-        const dialogRef = this.dialog.open(StatisticsDialogComponent, {
+       this.dialog.open(StatisticsDialogComponent, {
             width: '98%',
             height: '90%',
             data: {title: 'Dados tabulares'},
-        });
-
-        dialogRef.afterClosed().subscribe(() => {
-            console.log('The dialog was closed');
         });
     }
 }

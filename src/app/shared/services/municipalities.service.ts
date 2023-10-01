@@ -48,5 +48,17 @@ export class MunicipalitiesService {
                 })
             );
     }
+    getFeature(codigo: string): Observable<Feature> {
+        // eslint-disable-next-line max-len
+        const municipalitiesParams = `?service=WFS&version=1.0.0&request=GetFeature&typeName=teeb%3Acamada_municipios&outputFormat=application%2Fjson&format_options=CHARSET:UTF-8&CQL_FILTER=CODIGO%20%3D%20'${codigo}'`;
+        return this._http.get<FeatureCollection>(`${this.wmsUrl}${municipalitiesParams}`)
+            .pipe(
+                map((collection: FeatureCollection) => collection.features[0]),
+                catchError((error) => {
+                    console.error('Error to get municipalities from Map Server', error);
+                    return of(null);
+                })
+            );
+    }
 }
 

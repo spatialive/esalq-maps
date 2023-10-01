@@ -25,6 +25,7 @@
             class="max-h-128 sm:px-2 border-t rounded-b shadow-md"
             [autoSelectActiveOption]="true"
             [disableRipple]="true"
+            (optionSelected)="optionSelected($event)"
             #matAutocomplete="matAutocomplete">
             <mat-option
                 class="py-0 px-6 text-md pointer-events-none text-secondary bg-transparent"
@@ -38,8 +39,7 @@
                 <ng-container *ngFor="let result of resultSet.results; trackBy: trackByFn">
                     <mat-option
                         class="group relative mb-1 py-0 px-6 text-md rounded-md hover:bg-gray-100 dark:hover:bg-hover"
-                        [routerLink]="result.link"
-                        [value]="result.value">
+                        [value]="result.id + ' - ' + result.value">
                         <!-- Contacts -->
                         <ng-container *ngIf="resultSet.id === 'biomes'">
                             <ng-container *ngTemplateOutlet="biomesResult; context: {$implicit: result}"></ng-container>
@@ -83,6 +83,7 @@
             class="max-h-128 mt-1 rounded"
             [autoSelectActiveOption]="true"
             [disableRipple]="true"
+            (optionSelected)="optionSelected($event)"
             #matAutocomplete="matAutocomplete">
             <mat-option
                 class="py-0 px-6 text-md pointer-events-none text-secondary bg-transparent"
@@ -164,7 +165,7 @@
             </mat-icon>
         </div>
         <div class="ml-3 truncate">
-            <h2 [innerHTML]="result.name"></h2>
+            <h2>{{result.id}} - {{result.name}}</h2>
         </div>
     </div>
 </ng-template>

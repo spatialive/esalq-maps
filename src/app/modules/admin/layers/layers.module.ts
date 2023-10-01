@@ -15,6 +15,9 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {FuseAlertModule} from '../../../../@fuse/components/alert';
 import {NgApexchartsModule} from 'ng-apexcharts';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatSortModule} from "@angular/material/sort";
+import {MatTableModule} from "@angular/material/table";
+import {SharedModule} from "../../../shared/shared.module";
 
 const datasetRoutes: Route[] = [
     {
@@ -41,7 +44,10 @@ const datasetRoutes: Route[] = [
         MatDialogModule,
         FuseAlertModule,
         NgApexchartsModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        MatSortModule,
+        MatTableModule,
+        SharedModule
     ],
     exports: [
         LayersComponent

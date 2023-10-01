@@ -10,6 +10,10 @@
     "search_placeholder": "Pesquisar ...",
     "extent_lable": "Adaptar à extensão",
     "variaveis_camadas_vetoriais": {
+        "AREA_KM2": {
+            "label": "Área (km\\u00b2)",
+            "descricao": "Área da região selecionada em quilometros quadrados."
+        },
         "BAU_AGR": {
             "label": "Agricultura (ha) - (linha de base)",
             "descricao": "Área de agricultura no cenário BAU (linha de base)"

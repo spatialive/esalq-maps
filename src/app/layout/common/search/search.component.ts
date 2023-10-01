@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 import { debounceTime, filter, map, Subject, takeUntil } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations/public-api';
+import {SearchMunicipalityState} from "../../../shared/states/search-municipality.state";
 
 @Component({
     selector     : 'search',
@@ -31,7 +32,8 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy
     constructor(
         private _elementRef: ElementRef,
         private _httpClient: HttpClient,
-        private _renderer2: Renderer2
+        private _renderer2: Renderer2,
+        private readonly searchMunicipalityState: SearchMunicipalityState
     )
     {
     }
@@ -209,6 +211,7 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy
 
         // Close the search
         this.opened = false;
+        this.searchMunicipalityState.codigo = 'remove';
     }
 
     /**
@@ -220,5 +223,9 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy
     trackByFn(index: number, item: any): any
     {
         return item.id || index;
+    }
+    optionSelected(evt): void{
+        const mun = evt.option.value.split(' - ');
+        this.searchMunicipalityState.codigo = mun[0];
     }
 }

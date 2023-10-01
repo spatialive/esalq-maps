@@ -11,6 +11,9 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {SharedModule} from '../../../shared/shared.module';
 
 export const statisticsModules = [
     CommonModule,
@@ -27,6 +30,9 @@ export const statisticsModules = [
     MatAutocompleteModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    SharedModule,
 ];
 

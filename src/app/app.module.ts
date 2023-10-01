@@ -1,4 +1,4 @@
-import {CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ExtraOptions, PreloadAllModules, RouterModule} from '@angular/router';
@@ -15,7 +15,11 @@ import {appRoutes} from 'app/app.routing';
 import {GoogleLoginProvider, SocialAuthServiceConfig} from '@abacritt/angularx-social-login';
 import {environment} from '../environments/environment';
 import {GoogleInitOptions} from '@abacritt/angularx-social-login/providers/google-login-provider';
-
+import { registerLocaleData } from '@angular/common';
+import ptBr from '@angular/common/locales/pt';
+import {MatPaginatorIntl} from "@angular/material/paginator";
+import {MatPaginatorIntlPtBr} from "./shared";
+registerLocaleData(ptBr);
 const routerConfig: ExtraOptions = {
     preloadingStrategy: PreloadAllModules,
     scrollPositionRestoration: 'enabled'
@@ -69,7 +73,9 @@ const googleLoginOptions: GoogleInitOptions = {
                     console.error(err);
                 }
             } as SocialAuthServiceConfig,
-        }
+        },
+        { provide: LOCALE_ID, useValue: 'pt-BR' },
+        { provide: MatPaginatorIntl, useClass: MatPaginatorIntlPtBr }
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })

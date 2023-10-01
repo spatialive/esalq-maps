@@ -56,7 +56,8 @@
                                 "glob": "_redirects",
                                 "input": "src",
                                 "output": "/"
-                            }
+                            },
+                            "src/app/modules/admin/statistics/table.worker.js"
                         ],
                         "stylePreprocessorOptions": {
                             "includePaths": [

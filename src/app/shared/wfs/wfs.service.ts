@@ -5,6 +5,7 @@ import {environment} from '../../../environments/environment';
 import {BiomesService, CountryService, MunicipalitiesService, StatesService} from '../services';
 import Point from "ol/geom/Point";
 import {Coordinate} from "ol/coordinate";
+import {fixEncoding} from "../utils";
 
 @Injectable({
     providedIn: 'root'
@@ -71,10 +72,15 @@ export class WfsService {
 
         return propertiesObservable
             .pipe(
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
                 map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        response.features = response.features.map((feat) => {
+                            feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
+                            return feat;
+                        });
                         this._statesService.states = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
@@ -101,6 +107,10 @@ export class WfsService {
                 map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        response.features = response.features.map((feat) => {
+                            feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
+                            return feat;
+                        });
                         this._biomesService.biomes = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
@@ -127,6 +137,10 @@ export class WfsService {
                 map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
+                        response.features = response.features.map((feat) => {
+                            feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
+                            return feat;
+                        });
                         this._countryService.country = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {

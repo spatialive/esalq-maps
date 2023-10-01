@@ -109,7 +109,6 @@ export class OlMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
             // extent: this.extent,
             // projection: this.projection
         });
-
         this.map = new Map({
             target: this.target,
             interactions: defaultInteractions({altShiftDragRotate: false, pinchRotate: false}),
