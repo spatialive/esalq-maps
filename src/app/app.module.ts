@@ -12,13 +12,11 @@ import {mockApiServices} from 'app/mock-api';
 import {LayoutModule} from 'app/layout/layout.module';
 import {AppComponent} from 'app/app.component';
 import {appRoutes} from 'app/app.routing';
-import {GoogleLoginProvider, SocialAuthServiceConfig} from '@abacritt/angularx-social-login';
-import {environment} from '../environments/environment';
 import {GoogleInitOptions} from '@abacritt/angularx-social-login/providers/google-login-provider';
 import { registerLocaleData } from '@angular/common';
 import ptBr from '@angular/common/locales/pt';
-import {MatPaginatorIntl} from "@angular/material/paginator";
-import {MatPaginatorIntlPtBr} from "./shared";
+import {MatPaginatorIntl} from '@angular/material/paginator';
+import {MatPaginatorIntlPtBr} from './shared';
 registerLocaleData(ptBr);
 const routerConfig: ExtraOptions = {
     preloadingStrategy: PreloadAllModules,
@@ -56,24 +54,6 @@ const googleLoginOptions: GoogleInitOptions = {
         AppComponent
     ],
     providers: [
-        {
-            provide: 'SocialAuthServiceConfig',
-            useValue: {
-                autoLogin: false,
-                providers: [
-                    {
-                        id: GoogleLoginProvider.PROVIDER_ID,
-                        provider: new GoogleLoginProvider(
-                            environment.googleClientId,
-                            googleLoginOptions
-                        )
-                    }
-                ],
-                onError: (err) => {
-                    console.error(err);
-                }
-            } as SocialAuthServiceConfig,
-        },
         { provide: LOCALE_ID, useValue: 'pt-BR' },
         { provide: MatPaginatorIntl, useClass: MatPaginatorIntlPtBr }
     ],

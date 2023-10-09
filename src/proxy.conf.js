@@ -1,12 +1,20 @@
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
+
 const proxy = [
     {
         context: ['/geoservico'],
-        target: 'http://34.123.211.92:8080',
+        target: 'https://teeb.gppesalq.agr.br',
         pathRewrite: {'^/geoservico' : ''},
         secure: true,
         logLevel: 'debug',
         changeOrigin: true,
-        rejectUnhauthorized : false
+        agent: agent,
+        rejectUnauthorized : false,
+        onProxyReq: (proxyReq, req, res) => {
+            console.log(`[INFO] Proxying request GEOSERVER - ${req.method} ${req.url}`);
+        },
     }
 ];
 module.exports = proxy;
