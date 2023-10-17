@@ -1,4 +1,5 @@
-const agent = new https.Agent({
+const {Agent} = require("https");
+const agent = new Agent({
     rejectUnauthorized: false
 });
 

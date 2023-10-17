@@ -23,8 +23,7 @@
         </ol-map>
     </div>
 </div>
-
-<fuse-card *ngIf="displayFeatureInfo" id="overlay" class=" ol-popup min-w-min flex p-2">
+<fuse-card *ngIf="displayFeatureInfo" id="overlay" class=" ol-popup min-w-min flex p-2" cdkDrag>
     <div class="flex flex-col w-full">
         <div class="flex  justify-between">
             <div class="text-lg text-center w-full font-bold">{{displayFeatureInfo?.TITULO}}</div>
@@ -43,18 +42,18 @@
                 <ng-container [matColumnDef]="'label'">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>Dado</th>
                     <td mat-cell *matCellDef="let element">
-                       <div class="flex flex-col">
-                           <strong>{{element.label}}</strong>
-                           <small>{{element.description}}</small>
-                       </div>
+                        <div class="flex flex-col">
+                            <strong>{{element.label}}</strong>
+                            <small>{{element.description}}</small>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container [matColumnDef]="'value'">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>Valor</th>
                     <td mat-cell *matCellDef="let element">
-                       <span>
-                           <span> {{element.value | safeNumber:'1.0-2'}} </span>
-                       </span>
+                   <span>
+                       <span> {{element.value | safeNumber:'1.0-2'}} </span>
+                   </span>
                     </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -65,18 +64,15 @@
             <mat-toolbar class="w-full">
                 <mat-toolbar-row class="flex flex-col md:flex-row justify-between items-center">
                     <div class="flex items-center justify-between">
-                        <div *ngIf="displayFeatureInfo?.coordinate">
-                            <small>Ponto: {{displayFeatureInfo?.coordinate[1].toFixed(4)}}, {{displayFeatureInfo?.coordinate[0].toFixed(4)}}</small>
-                        </div>
                         <button class="ml-4 mr-2" mat-raised-button color="accent" [matTooltip]="'Exportar XLSX'" (click)="toXLS()">
-                            <mat-icon>table_view</mat-icon>
+                            <mat-icon>table_view</mat-icon> XLSX
                         </button>
 
                         <button class="mr-2" mat-raised-button color="primary" [matTooltip]="'Exportar JSON'" (click)="toJSON()">
-                            <mat-icon>description</mat-icon>
+                            <mat-icon>description</mat-icon> JSON
                         </button>
                         <button mat-raised-button color="warn" [matTooltip]="'Exportar CSV'" (click)="toCSV()">
-                            <mat-icon>grid_on</mat-icon>
+                            <mat-icon>grid_on</mat-icon> CSV
                         </button>
                     </div>
                 </mat-toolbar-row>
@@ -84,3 +80,5 @@
         </div>
     </div>
 </fuse-card>
+
+

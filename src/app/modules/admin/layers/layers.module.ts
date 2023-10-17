@@ -15,11 +15,12 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {FuseAlertModule} from '../../../../@fuse/components/alert';
 import {NgApexchartsModule} from 'ng-apexcharts';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatSortModule} from "@angular/material/sort";
-import {MatTableModule} from "@angular/material/table";
-import {SharedModule} from "../../../shared/shared.module";
-import {MatPaginatorModule} from "@angular/material/paginator";
-import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatSortModule} from '@angular/material/sort';
+import {MatTableModule} from '@angular/material/table';
+import {SharedModule} from '../../../shared/shared.module';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 const datasetRoutes: Route[] = [
     {
@@ -51,7 +52,8 @@ const datasetRoutes: Route[] = [
         MatTableModule,
         SharedModule,
         MatPaginatorModule,
-        MatToolbarModule
+        MatToolbarModule,
+        DragDropModule
     ],
     exports: [
         LayersComponent

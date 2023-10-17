@@ -42,7 +42,7 @@ import {MatSort} from '@angular/material/sort';
     selector: 'layers',
     templateUrl: './layers.component.html',
     styleUrls: ['./layers.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
 })
 export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('containerMap') containerMap: ElementRef;
@@ -102,14 +102,15 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this.layers.unshift(new TileLayer({
             properties: {
-                key: 'google',
+                key: 'mapbox-light',
                 type: 'bmap',
                 visible: false,
             },
             source: new XYZ({
-                attributions: 'Google Satellite',
+                attributions: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>',
                 url:
-                    'https://mt{0-3}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+                // eslint-disable-next-line max-len
+                    'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=sk.eyJ1IjoiZ3BwZXNhbHEiLCJhIjoiY2xudWR6ZmwwMGNiZzJ4cXR2eXU4aDY4cSJ9.tH_uMA7TgjbRUsRMYBrc_A',
             }),
             visible: true
         }));
@@ -240,6 +241,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
 
                     this.legends = newLegends;
+                    this.cdr.detectChanges();
                 }
             });
     }
