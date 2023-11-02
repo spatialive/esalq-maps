@@ -9,16 +9,14 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {
-    BiomesService,
-    CountryService, exportToCSV, exportToJSON, exportToXLS,
+    exportToCSV, exportToJSON, exportToXLS,
     Feature,
     Layer,
     LimitsService,
     MunicipalitiesService,
-    StatesService,
-    Theme
+    Theme, WfsService
 } from '../../../shared';
-import {of, Subject, switchMap, takeUntil} from 'rxjs';
+import {of, Subject, switchMap, take, takeUntil} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl} from '@angular/forms';
 import {statisticsModules} from './statistics-modules';
@@ -69,6 +67,8 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
     displayedColumns: string[] = [];
     dataSource!: MatTableDataSource<any>;
     private unsubscribeAll: Subject<any> = new Subject<any>();
+    private loadStartTime: number;
+    private loadEndTime: number;
 
     /**
      * Constructor
@@ -76,10 +76,8 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
     constructor(
         public dialogRef: MatDialogRef<StatisticsDialogComponent>,
         private readonly limitsService: LimitsService,
-        private readonly countryService: CountryService,
-        private readonly biomesService: BiomesService,
-        private readonly statesService: StatesService,
         private readonly municipalitiesService: MunicipalitiesService,
+        private readonly wfsService: WfsService,
         private readonly translocoService: TranslocoService,
         private readonly _http: HttpClient,
         private fuseLoadingService: FuseLoadingService,
@@ -112,21 +110,26 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                     this.currentLimit = layers.find(l => l.visible);
                     switch (this.currentLimit.Name) {
                         case 'teeb:camada_estados':
-                            return this.statesService.states$;
+                            return this.wfsService.states$;
                         case 'teeb:camada_br':
-                            return this.countryService.country$;
+                            return this.wfsService.country$;
                         case 'teeb:camada_biomas':
-                            return this.biomesService.biomes$;
+                            return this.wfsService.biomes$;
                         case 'teeb:camada_municipios':
-                            return this.municipalitiesService.municipalities$;
+                            return this.wfsService.municipalities$;
+                        case 'teeb:camada_frentes_desmatamento_BR_sirgas':
+                            return this.wfsService.frentesDesmatamento$;
                         default:
                             return of([]);
                     }
-                })
+                }),
+                take(1)
             )
+            .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (dados) => {
                     this.dados = dados;
+                    console.log('DADOS- ', this.dados);
                     this.fillTable();
                 }
             });
@@ -137,7 +140,7 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                     this.getThemes(lang);
                 }
             });
-        this.statesService.states$
+        this.wfsService.states$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (states) => {
@@ -146,16 +149,20 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
 
                 }
             });
-        this.themesSeleted.valueChanges.subscribe({
-            next: () => {
-                this.fillTable();
-            }
-        });
-        this.statesSeleted.valueChanges.subscribe({
-            next: (value) => {
-                this.filterData(value.map(item => item.properties['SIGLA_UF']));
-            }
-        });
+        this.themesSeleted.valueChanges
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: () => {
+                    this.fillTable();
+                }
+            });
+        this.statesSeleted.valueChanges
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (value) => {
+                    this.filterData(value.map(item => item.properties['SIGLA_UF']));
+                }
+            });
         this.getThemes();
     }
     exportToXLS(): void {
@@ -169,7 +176,11 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         exportToCSV(this.dataSource, this.currentLimit.Name);
     }
     fillTable(): void {
+        this.loadStartTime = performance.now();
         this.fuseLoadingService.show();
+        console.log('LIMIT', this.currentLimit)
+        console.log('themes -> ', this.themesSeleted)
+        console.log('dados -> ', this.dados)
         this.themesTable = [...this.themesFixed, ...this.themesSeleted.value];
         this.displayedColumns = [...this.themesFixed.map(item => item.id), ...this.themesSeleted.value.map(theme => theme.id)];
         this.dataSource = new MatTableDataSource<any>(this.dados.map(mun => mun.properties));
@@ -180,13 +191,23 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                 const dataValue = data['SIGLA_UF'] ? data['SIGLA_UF'].toString().toLowerCase() : '';
                 return filterArray.some(filterItem => dataValue.includes(filterItem.toLowerCase()));
             };
+        } else if(this.currentLimit.Name.includes('bioma')){
+            this.displayedColumns = this.displayedColumns.filter(column => !column.includes('SIGLA_UF'));
         }
+
+        this.loadEndTime = performance.now();
+        this.logLoadTime();
 
         setTimeout(() => {
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.matSort;
             this.fuseLoadingService.hide();
         }, 100);
+    }
+
+    private logLoadTime(): void {
+        const loadTime = this.loadEndTime - this.loadStartTime;
+        console.log(`Load time: ${loadTime.toFixed(2)} ms`);
     }
 
     filterData(value: string[]): void {
@@ -240,5 +261,6 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
 
     close(): void {
         this.dialogRef.close();
+        this.ngOnDestroy();
     }
 }

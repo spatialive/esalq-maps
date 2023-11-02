@@ -13,13 +13,12 @@ import {XYZ, TileWMS} from 'ol/source';
 import {Observable, Subject, take, takeUntil} from 'rxjs';
 import {
     Layer,
-    BiomesService,
-    CountryService,
     LayersService,
     LimitsService,
     MunicipalitiesService,
-    StatesService, Feature,
-    WfsService, setHighestZIndex, fixEncoding, Theme, exportToXLS, exportToJSON, exportToCSV, normalize
+    WfsService,
+    Feature,
+    setHighestZIndex, fixEncoding, Theme, exportToXLS, exportToJSON, exportToCSV, normalize
 } from '../../../shared';
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
@@ -76,9 +75,6 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly cdr: ChangeDetectorRef,
         private readonly layersService: LayersService,
         private readonly limitsService: LimitsService,
-        private readonly countryService: CountryService,
-        private readonly biomesService: BiomesService,
-        private readonly statesService: StatesService,
         private readonly municipalitiesService: MunicipalitiesService,
         private readonly searchMunicipalityState: SearchMunicipalityState,
         private readonly wfsService: WfsService,
@@ -162,28 +158,28 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.handleLayers(layers);
                 }
             });
-        this.countryService.country$
+        this.wfsService.country$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (country: Feature[]) => {
                     this.mapperLimits.br = country;
                 }
             });
-        this.biomesService.biomes$
+        this.wfsService.biomes$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (biomes: Feature[]) => {
                     this.mapperLimits.biomas = biomes;
                 }
             });
-        this.statesService.states$
+        this.wfsService.states$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (states: Feature[]) => {
                     this.mapperLimits.estados = states;
                 }
             });
-        this.municipalitiesService.municipalities$
+        this.wfsService.municipalities$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (municipalities: Feature[]) => {
@@ -214,7 +210,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (codigo) => {
                     if(codigo !== 'remove'){
-                        this.municipalitiesService.getFeature(codigo).subscribe({
+                        this.municipalitiesService.getMunicipioByCodigo(codigo).subscribe({
                             next: (featureJson) => {
                                 if(featureJson){
                                     this.addFeatureToMap(featureJson, true);
@@ -426,7 +422,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         if(this.activeLimit.Name.includes('camada_br')){
             const properties = this.mapperLimits[foundKey][0].properties;
             this.displayFeatureInfo = Object.assign(this.displayFeatureInfo, this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
-            this.countryService.getFeature().subscribe({
+            this.wfsService.getBrasil().subscribe({
                 next: (feature) => {
                     this.showPopup(evt, feature);
                 }
@@ -459,7 +455,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'TITULO': propertyObject.SIGLA_UF ? `${propertyObject.TITULO} - ${propertyObject.SIGLA_UF}` : propertyObject.TITULO,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'AREA_KM2': propertyObject.AREA_KM2 ? propertyObject.AREA_KM2 : null
+            'AREA_HA': propertyObject.AREA_HA ? propertyObject.AREA_HA : null
         };
         keywordLists.forEach((keyword) => {
             if (propertyObject.hasOwnProperty(keyword)) {

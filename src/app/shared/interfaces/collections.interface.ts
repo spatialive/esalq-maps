@@ -14,3 +14,8 @@ export interface Feature {
     geometry: any;
     properties: any;
 }
+
+export interface CqlFilterCriteria {
+    property: string;
+    value: string;
+}

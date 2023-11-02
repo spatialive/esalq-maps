@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import {FuseMockApiService} from '@fuse/lib/mock-api';
-import {BiomesService, MunicipalitiesService, StatesService, Feature, normalize, fixEncoding} from '../../../shared';
+import {MunicipalitiesService, WfsService, Feature, normalize, fixEncoding} from '../../../shared';
 import {Subject, takeUntil} from 'rxjs';
 
 @Injectable({
@@ -19,9 +19,8 @@ export class SearchMockApi implements OnDestroy {
      */
     constructor(
         private readonly _fuseMockApiService: FuseMockApiService,
-        private readonly biomesService: BiomesService,
-        private readonly statesService: StatesService,
-        private readonly municipalitiesService: MunicipalitiesService
+        private readonly municipalitiesService: MunicipalitiesService,
+        private readonly wfsService: WfsService
     )
     {
         this.subscriptions();
@@ -34,21 +33,21 @@ export class SearchMockApi implements OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
     subscriptions(): void{
-        this.biomesService.biomes$
+        this.wfsService.biomes$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (biomes: Feature[]) => {
                    this.biomes = biomes;
                 }
             });
-        this.statesService.states$
+        this.wfsService.states$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (states: Feature[]) => {
                     this.states = states;
                 }
             });
-        this.municipalitiesService.municipalities$
+        this.wfsService.municipalities$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (municipalities: Feature[]) => {

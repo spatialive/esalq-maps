@@ -1,32 +1,31 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {catchError, map, Observable, of, switchMap, throwError} from 'rxjs';
+import {catchError, map, Observable, of, ReplaySubject, switchMap, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {BiomesService, CountryService, MunicipalitiesService, StatesService} from '../services';
+import {MunicipalitiesService} from './index';
 import Point from "ol/geom/Point";
 import {Coordinate} from "ol/coordinate";
 import {fixEncoding} from "../utils";
+import {Feature, CqlFilterCriteria} from "../interfaces";
+import {GlobalDataService} from "./globaldata.service";
 
 @Injectable({
     providedIn: 'root'
 })
 export class WfsService {
+
+    private _biomes: ReplaySubject<Feature[]> = new ReplaySubject<Feature[]>();
+    private _country: ReplaySubject<Feature[]> = new ReplaySubject<Feature[]>();
+    private _states: ReplaySubject<Feature[]> = new ReplaySubject<Feature[]>();
+    private _municipalities: ReplaySubject<Feature[]> = new ReplaySubject<Feature[]>();
+    private _frentesDesmatamento: ReplaySubject<Feature[]> = new ReplaySubject<Feature[]>();
+
     private wfsUrl: string;
-    private mapperLayers: any;
     constructor(
         private _http: HttpClient,
-        private _biomesService: BiomesService,
-        private _statesService: StatesService,
-        private _municipalitiesService: MunicipalitiesService,
-        private _countryService: CountryService,
+        private readonly globalDataService: GlobalDataService,
     ) {
         this.wfsUrl = `${environment.geoserverUrl}/geoserver/ows`;
-        this.mapperLayers = {
-            municipios: 'teeb:camada_municipios',
-            estados: 'teeb:camada_estados',
-            biomas: 'teeb:camada_biomas',
-            brasil: 'teeb:camada_br'
-        };
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -38,8 +37,56 @@ export class WfsService {
      * @param value
      */
 
+    get biomes$(): Observable<Feature[]> {
+        return this._biomes.asObservable();
+    }
+
+    set biomes(value: Feature[]) {
+        this._biomes.next(value);
+    }
+
+    get country$(): Observable<Feature[]> {
+        return this._country.asObservable();
+    }
+
+    set country(value: Feature[]) {
+        this._country.next(value);
+    }
+
+    get states$(): Observable<Feature[]> {
+        return this._states.asObservable();
+    }
+
+    set states(value: Feature[]) {
+        this._states.next(value);
+    }
+
+    get municipalities$(): Observable<Feature[]> {
+        return this._municipalities.asObservable();
+    }
+
+    set municipalities(value: Feature[]) {
+        this._municipalities.next(value);
+    }
+
+    get frentesDesmatamento$(): Observable<Feature[]> {
+        return this._frentesDesmatamento.asObservable();
+    }
+
+    set frentesDesmatamento(value: Feature[]) {
+        this._frentesDesmatamento.next(value);
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ WFS
+    // -----------------------------------------------------------------------------------------------------
+    /**
+     * Métodos de Negócio para busca WFS
+     *
+     * @param value
+     */
     getMunicipios(properties?: string[]): Observable<any[]> {
-        const layerName = this.mapperLayers['municipios'];
+        const layerName = this.globalDataService.mapLayerNames$['municipios'];
 
         const propertiesObservable = properties ? of(properties)
             : this.fetchLayerPropertyNames(layerName);
@@ -50,7 +97,7 @@ export class WfsService {
                 map((response) => {
                     // Map through each feature and extract the 'properties' field
                     if (response && Array.isArray(response.features)) {
-                        this._municipalitiesService.municipalities = response.features;
+                        this.municipalities = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
                         console.error('Features array not found or not an array in response', response);
@@ -65,7 +112,7 @@ export class WfsService {
     }
 
     getEstados(properties?: string[]): Observable<any[]> {
-        const layerName = this.mapperLayers['estados'];
+        const layerName = this.globalDataService.mapLayerNames$['estados'];
 
         const propertiesObservable = properties ? of(properties)
             : this.fetchLayerPropertyNames(layerName);
@@ -81,7 +128,7 @@ export class WfsService {
                             feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
                             return feat;
                         });
-                        this._statesService.states = response.features;
+                        this.states = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
                         console.error('Features array not found or not an array in response', response);
@@ -96,7 +143,7 @@ export class WfsService {
     }
 
     getBiomas(properties?: string[]): Observable<any[]> {
-        const layerName = this.mapperLayers['biomas'];
+        const layerName = this.globalDataService.mapLayerNames$['biomas'];
 
         const propertiesObservable = properties ? of(properties)
             : this.fetchLayerPropertyNames(layerName);
@@ -111,7 +158,7 @@ export class WfsService {
                             feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
                             return feat;
                         });
-                        this._biomesService.biomes = response.features;
+                        this.biomes = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
                         console.error('Features array not found or not an array in response', response);
@@ -126,7 +173,7 @@ export class WfsService {
     }
 
     getBrasil(properties?: string[]): Observable<any[]> {
-        const layerName = this.mapperLayers['brasil'];
+        const layerName = this.globalDataService.mapLayerNames$['brasil'];
 
         const propertiesObservable = properties ? of(properties)
             : this.fetchLayerPropertyNames(layerName);
@@ -141,7 +188,7 @@ export class WfsService {
                             feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
                             return feat;
                         });
-                        this._countryService.country = response.features;
+                        this.country = response.features;
                         return response.features.map(feature => feature.properties);
                     } else {
                         console.error('Features array not found or not an array in response', response);
@@ -153,6 +200,76 @@ export class WfsService {
                     return of([]);
                 })
             );
+    }
+
+    getFrentesDesmatamento(properties?: string[]): Observable<any[]> {
+        const layerName = this.globalDataService.mapLayerNames$['frentesDesmatamento'];
+
+        const propertiesObservable = properties ? of(properties)
+            : this.fetchLayerPropertyNames(layerName);
+
+        return propertiesObservable
+            .pipe(
+                // eslint-disable-next-line @typescript-eslint/no-shadow
+                switchMap(properties => this.requestWFSWithProperties(layerName, properties)),
+                map((response) => {
+                    // Map through each feature and extract the 'properties' field
+                    if (response && Array.isArray(response.features)) {
+                        response.features = response.features.map((feat) => {
+                            feat.properties['TITULO'] = fixEncoding(feat.properties['TITULO']);
+                            return feat;
+                        });
+                        this.frentesDesmatamento = response.features;
+                        return response.features.map(feature => feature.properties);
+                    } else {
+                        console.error('Features array not found or not an array in response', response);
+                        return [];
+                    }
+                }),
+                catchError((error) => {
+                    console.error(error);
+                    return of([]);
+                })
+            );
+    }
+
+    getFeaturesUsingCqlFilter(layerName: string,filters?: CqlFilterCriteria[]): Observable<any> {
+        return this.getGeometryColumnName(layerName).pipe(
+            switchMap(geometryColumnName => {
+                if (!geometryColumnName) {
+                    return throwError(() => new Error('Geometry column name could not be fetched'));
+                }
+
+                let cqlFilters = '';
+                if (filters && filters.length > 0) {
+                    // Construct the CQL_FILTER string from the array of filters
+                    cqlFilters = filters.map(filter => `${filter.property} = '${filter.value}'`).join(' AND ');
+                }
+
+                const queryParams = {
+                    service: 'WFS',
+                    version: '1.0.0',
+                    request: 'GetFeature',
+                    typeName: layerName,
+                    outputFormat: 'application/json',
+                    format_options: 'CHARSET:UTF-8',
+                    maxFeatures: 1,
+                    propertyName: '', // If you want to list specific property names, add them here separated by commas
+                    CQL_FILTER: cqlFilters
+                };
+
+                return this._http.get(this.createUrl(queryParams)).pipe(
+                    map(response => {
+                        const features = response['features'];
+                        return features && features.length > 0 ? features : [];
+                    })
+                );
+            }),
+            catchError((error) => {
+                console.error(error);
+                return of([]);
+            })
+        );
     }
 
     getPointInfo(layerName: string, point: Coordinate): Observable<any>  {

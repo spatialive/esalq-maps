@@ -5,7 +5,7 @@
 export const environment = {
     production: false,
     geoserverUrl: '/geoservico',
-    langUrl: 'https://raw.githubusercontent.com/spatialive/esalq-maps/main/src'
+    langUrl: '.'
 };
 
 /*
