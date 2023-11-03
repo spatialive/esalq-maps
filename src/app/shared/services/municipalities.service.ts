@@ -21,7 +21,7 @@ export class MunicipalitiesService {
         };
 
         // Call getFeaturesUsingFilter from the WFSService
-        return this.wfsService.getFeaturesUsingCqlFilter(this.globalDataService.mapLayerNames$['municipios'], [filter])
+        return this.wfsService.getFeaturesUsingCqlFilter(this.globalDataService.mapLayerNames$.municipios, [filter])
             .pipe(
                 map(features => features.length > 0 ? features[0] : null),
                 catchError((error) => {

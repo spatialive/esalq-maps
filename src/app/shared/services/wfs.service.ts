@@ -2,11 +2,9 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {catchError, map, Observable, of, ReplaySubject, switchMap, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {MunicipalitiesService} from './index';
-import Point from "ol/geom/Point";
 import {Coordinate} from "ol/coordinate";
 import {fixEncoding} from "../utils";
-import {Feature, CqlFilterCriteria} from "../interfaces";
+import {CqlFilterCriteria, Feature} from "../interfaces";
 import {GlobalDataService} from "./globaldata.service";
 
 @Injectable({
@@ -86,7 +84,7 @@ export class WfsService {
      * @param value
      */
     getMunicipios(properties?: string[]): Observable<any[]> {
-        const layerName = this.globalDataService.mapLayerNames$['municipios'];
+        const layerName = this.globalDataService.mapLayerNames$.municipios;
 
         const propertiesObservable = properties ? of(properties)
             : this.fetchLayerPropertyNames(layerName);

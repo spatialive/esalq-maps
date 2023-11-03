@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {catchError, map, Observable, of, ReplaySubject, take} from 'rxjs';
+import {Observable, ReplaySubject, take} from 'rxjs';
 import {Layer} from '../interfaces';
 import {LayersService} from './layers.service';
+
 @Injectable({
     providedIn: 'root'
 })

@@ -1,11 +1,9 @@
 import {Injectable} from '@angular/core';
-import {catchError, map, Observable, of} from 'rxjs';
-import {CqlFilterCriteria} from '../interfaces';
-import {WfsService} from "./wfs.service";
 
 @Injectable({
     providedIn: 'root'
 })
+
 export class GlobalDataService {
     private _mapLayerNames: any;
 

@@ -3,22 +3,30 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
-    HostListener, OnDestroy,
+    HostListener,
+    OnDestroy,
     OnInit,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import {Tile as TileLayer} from 'ol/layer';
-import {XYZ, TileWMS} from 'ol/source';
-import {Observable, Subject, take, takeUntil} from 'rxjs';
+import {TileWMS, XYZ} from 'ol/source';
+import {Subject, take, takeUntil} from 'rxjs';
 import {
+    exportToCSV,
+    exportToJSON,
+    exportToXLS,
+    Feature,
+    fixEncoding,
+    GlobalDataService,
     Layer,
     LayersService,
     LimitsService,
     MunicipalitiesService,
-    WfsService,
-    Feature,
-    setHighestZIndex, fixEncoding, Theme, exportToXLS, exportToJSON, exportToCSV, normalize
+    normalize,
+    setHighestZIndex,
+    Theme,
+    WfsService
 } from '../../../shared';
 import Map from 'ol/Map';
 import {environment} from '../../../../environments/environment';
@@ -78,6 +86,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly municipalitiesService: MunicipalitiesService,
         private readonly searchMunicipalityState: SearchMunicipalityState,
         private readonly wfsService: WfsService,
+        private readonly globalDataService: GlobalDataService,
         private readonly _http: HttpClient,
         private readonly translocoService: TranslocoService,
         private readonly fuseMediaWatcherService: FuseMediaWatcherService,
@@ -261,7 +270,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         const extent = this.feature.getGeometry().getExtent();
         this.map.getView().fit(extent, { duration: 500 });
         if(fromSearch){
-            this.limitsService.updateLimitVisibility('teeb:camada_municipios', true);
+            this.limitsService.updateLimitVisibility(this.globalDataService.mapLayerNames$.municipios, true);
         }
     }
     removeFeatureFromMap(): void {

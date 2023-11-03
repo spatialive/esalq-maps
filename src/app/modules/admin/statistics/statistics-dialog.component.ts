@@ -9,12 +9,16 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {
-    exportToCSV, exportToJSON, exportToXLS,
+    exportToCSV,
+    exportToJSON,
+    exportToXLS,
     Feature,
+    GlobalDataService,
     Layer,
     LimitsService,
     MunicipalitiesService,
-    Theme, WfsService
+    Theme,
+    WfsService
 } from '../../../shared';
 import {of, Subject, switchMap, take, takeUntil} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -27,7 +31,6 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
-import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'statistics-dialog',
@@ -78,6 +81,7 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         private readonly limitsService: LimitsService,
         private readonly municipalitiesService: MunicipalitiesService,
         private readonly wfsService: WfsService,
+        readonly globalDataService: GlobalDataService,
         private readonly translocoService: TranslocoService,
         private readonly _http: HttpClient,
         private fuseLoadingService: FuseLoadingService,
@@ -109,15 +113,15 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                 switchMap((layers) => {
                     this.currentLimit = layers.find(l => l.visible);
                     switch (this.currentLimit.Name) {
-                        case 'teeb:camada_estados':
+                        case this.globalDataService.mapLayerNames$.estados:
                             return this.wfsService.states$;
-                        case 'teeb:camada_br':
+                        case this.globalDataService.mapLayerNames$.brasil:
                             return this.wfsService.country$;
-                        case 'teeb:camada_biomas':
+                        case this.globalDataService.mapLayerNames$.biomas:
                             return this.wfsService.biomes$;
-                        case 'teeb:camada_municipios':
+                        case this.globalDataService.mapLayerNames$.municipios:
                             return this.wfsService.municipalities$;
-                        case 'teeb:camada_frentes_desmatamento_BR_sirgas':
+                        case this.globalDataService.mapLayerNames$.frentesDesmatamento:
                             return this.wfsService.frentesDesmatamento$;
                         default:
                             return of([]);
