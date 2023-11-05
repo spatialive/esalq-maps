@@ -1,4 +1,6 @@
 import {
+    AfterViewInit,
+    ChangeDetectorRef,
     Component,
     CUSTOM_ELEMENTS_SCHEMA,
     Inject,
@@ -42,9 +44,10 @@ import {FuseLoadingService} from '../../../../@fuse/services/loading';
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
-export class StatisticsDialogComponent implements OnInit, OnDestroy {
-    @ViewChild('paginator') paginator!: MatPaginator;
-    @ViewChild(MatSort) matSort!: MatSort;
+export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+    // @ViewChild('paginator') paginator!: MatPaginator;
+    @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+    @ViewChild(MatSort, { static: true }) matSort!: MatSort;
     currentLimit: Layer;
     themes: Theme[] = [];
     themesTable: Theme[] = [];
@@ -83,11 +86,13 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         private readonly translocoService: TranslocoService,
         private readonly _http: HttpClient,
         private fuseLoadingService: FuseLoadingService,
+        private changeDetectorRef: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.themes = [];
         this.states = [];
         this.dados = [];
+        this.dataSource = new MatTableDataSource<any>();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -131,9 +136,9 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (dados) => {
                     this.dados = dados;
-                    console.log('DADOS- ', this.dados);
-                    this.dataSource = new MatTableDataSource<any>(this.dados.map(mun => mun.properties));
-                    this.fillTable();
+
+                    // this.dataSource.data = this.dados.map(mun => mun.properties);
+                    // this.fillTable();
                 }
             });
         this.translocoService.langChanges$
@@ -168,6 +173,18 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
             });
         this.getThemes();
     }
+
+    ngAfterViewInit() {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.matSort;
+
+        this.dataSource.data = this.dados.map(mun => mun.properties);
+        this.fillTable();
+        // The important part:
+        this.changeDetectorRef.detectChanges();
+
+    }
+
     exportToXLS(): void {
         exportToXLS(this.dataSource, this.themes, this.currentLimit.Name);
     }
@@ -184,7 +201,6 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         this.themesTable = [...this.themesFixed, ...this.themesSeleted.value];
         this.displayedColumns = [...this.themesFixed.map(item => item.id), ...this.themesSeleted.value.map(theme => theme.id)];
 
-        console.log("DS - ", this.dataSource);
         if(this.currentLimit.Name.includes('municipios')){
             // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             this.dataSource.filterPredicate = (data: any, filter: string) => {
@@ -200,9 +216,10 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         this.logLoadTime();
 
         setTimeout(() => {
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.matSort;
+            // this.dataSource.paginator = this.paginator;
+            // this.dataSource.sort = this.matSort;
             this.fuseLoadingService.hide();
+
         }, 100);
     }
 
