@@ -16,7 +16,6 @@ import {
     GlobalDataService,
     Layer,
     LimitsService,
-    MunicipalitiesService,
     Theme,
     WfsService
 } from '../../../shared';
@@ -79,7 +78,6 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
     constructor(
         public dialogRef: MatDialogRef<StatisticsDialogComponent>,
         private readonly limitsService: LimitsService,
-        private readonly municipalitiesService: MunicipalitiesService,
         private readonly wfsService: WfsService,
         readonly globalDataService: GlobalDataService,
         private readonly translocoService: TranslocoService,
@@ -134,6 +132,7 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                 next: (dados) => {
                     this.dados = dados;
                     console.log('DADOS- ', this.dados);
+                    this.dataSource = new MatTableDataSource<any>(this.dados.map(mun => mun.properties));
                     this.fillTable();
                 }
             });
@@ -182,12 +181,10 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
     fillTable(): void {
         this.loadStartTime = performance.now();
         this.fuseLoadingService.show();
-        console.log('LIMIT', this.currentLimit)
-        console.log('themes -> ', this.themesSeleted)
-        console.log('dados -> ', this.dados)
         this.themesTable = [...this.themesFixed, ...this.themesSeleted.value];
         this.displayedColumns = [...this.themesFixed.map(item => item.id), ...this.themesSeleted.value.map(theme => theme.id)];
-        this.dataSource = new MatTableDataSource<any>(this.dados.map(mun => mun.properties));
+
+        console.log("DS - ", this.dataSource);
         if(this.currentLimit.Name.includes('municipios')){
             // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             this.dataSource.filterPredicate = (data: any, filter: string) => {
