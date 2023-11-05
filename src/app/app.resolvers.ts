@@ -40,6 +40,7 @@ export class InitialDataResolver implements Resolve<any>
             this.wfsService.getEstados(),
             this.wfsService.getBiomas(),
             this.wfsService.getMunicipios(),
+            this.wfsService.getFrentesDesmatamento(),
             this._shortcutsService.getAll(),
             this._navigationService.get(),
         ]);

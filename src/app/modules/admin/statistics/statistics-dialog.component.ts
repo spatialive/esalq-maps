@@ -72,8 +72,6 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
     displayedColumns: string[] = [];
     dataSource!: MatTableDataSource<any>;
     private unsubscribeAll: Subject<any> = new Subject<any>();
-    private loadStartTime: number;
-    private loadEndTime: number;
 
     /**
      * Constructor
@@ -137,6 +135,8 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
                 next: (dados) => {
                     this.dados = dados;
 
+                    console.log(this.dados);
+
                     // this.dataSource.data = this.dados.map(mun => mun.properties);
                     // this.fillTable();
                 }
@@ -196,7 +196,6 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
         exportToCSV(this.dataSource, this.currentLimit.Name);
     }
     fillTable(): void {
-        this.loadStartTime = performance.now();
         this.fuseLoadingService.show();
         this.themesTable = [...this.themesFixed, ...this.themesSeleted.value];
         this.displayedColumns = [...this.themesFixed.map(item => item.id), ...this.themesSeleted.value.map(theme => theme.id)];
@@ -212,9 +211,6 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
             this.displayedColumns = this.displayedColumns.filter(column => !column.includes('SIGLA_UF'));
         }
 
-        this.loadEndTime = performance.now();
-        this.logLoadTime();
-
         setTimeout(() => {
             // this.dataSource.paginator = this.paginator;
             // this.dataSource.sort = this.matSort;
@@ -223,8 +219,8 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
         }, 100);
     }
 
-    private logLoadTime(): void {
-        const loadTime = this.loadEndTime - this.loadStartTime;
+    private logLoadTime(startTime: number, endTime: number): void {
+        const loadTime = startTime - endTime;
         console.log(`Load time: ${loadTime.toFixed(2)} ms`);
     }
 
