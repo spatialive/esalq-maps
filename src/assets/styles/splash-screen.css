@@ -40,16 +40,16 @@ body fuse-splash-screen .spinner > div {
 }
 
 body fuse-splash-screen .spinner .bounce1{
-    background-color: #8c161a !important;
+    background-color: #1e6d2d !important;
 }
 body fuse-splash-screen .spinner .bounce2{
-    background-color: #317eb8 !important;
+    background-color: #f5ac00 !important;
 }
 body fuse-splash-screen .spinner .bounce3{
-    background-color: #2b287d !important;
+    background-color: #fb3f15 !important;
 }
 body fuse-splash-screen .spinner .bounce4{
-    background-color: #e7aa2d !important;
+    background-color: #aa69e3 !important;
 }
 
 body fuse-splash-screen .spinner .bounce1 {
