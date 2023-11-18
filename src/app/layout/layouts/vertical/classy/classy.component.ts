@@ -9,6 +9,8 @@ import { User } from 'app/core/user/user.types';
 import { UserService } from 'app/core/user/user.service';
 import {MatDialog} from "@angular/material/dialog";
 import {StatisticsDialogComponent} from "../../../../modules/admin/statistics/statistics-dialog.component";
+import {environment} from "../../../../../environments/environment";
+import {LayersService} from "../../../../shared";
 
 @Component({
     selector     : 'classy-layout',
@@ -33,7 +35,8 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         private _userService: UserService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _fuseNavigationService: FuseNavigationService,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private readonly layersService: LayersService
     )
     {
     }
@@ -64,6 +67,9 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((navigation: Navigation) => {
+                Object.keys(navigation).forEach((key) => {
+                    this.updateBadgeById(navigation[key], environment.defaultLayer, { icon: 'heroicons_outline:check' });
+                });
                 this.navigation = navigation;
             });
 
@@ -81,6 +87,21 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
+    }
+
+    updateBadgeById(items, id, newBadge): void {
+        items.forEach((item) => {
+            // Check if the current item is the one we're looking for
+            if (item.id === id) {
+                // Update the badge
+                item.badge = newBadge;
+            }
+
+            // If the current item has children, apply the update recursively
+            if (item.children && item.children.length > 0) {
+                this.updateBadgeById(item.children, id, newBadge);
+            }
+        });
     }
     /**
      * On destroy

@@ -37,6 +37,7 @@ import {FuseLoadingService} from '../../../../@fuse/services/loading';
 import {HttpClient} from '@angular/common/http';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
+import {flattenLayers} from "../../../shared/utils/layer.util";
 
 @Component({
     selector: 'layers',
@@ -143,7 +144,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                    this.limitsService.get(layers);
                    const lays = layers.filter(lay => !lay.Name.includes('teeb:camada_'));
                    const limits = layers.filter(lay => lay.Name.includes('teeb:camada_'));
-                    this.addLayers(lays);
+                    this.addLayers(flattenLayers(lays));
                     this.addLimits(limits);
                 }
             });
@@ -152,14 +153,14 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (layers) => {
                     layers = layers.filter(lay => !lay.Name.includes('teeb:camada_'));
-                    this.handleLayers(layers);
+                    this.handleLayers(flattenLayers(layers));
                 }
             });
         this.limitsService.limits$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (layers) => {
-                    this.handleLayers(layers);
+                    this.handleLayers(flattenLayers(layers));
                 }
             });
         this.countryService.country$
@@ -233,8 +234,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (layers) => {
                     const newLegends = [];
-
-                    layers.forEach((lay) => {
+                    flattenLayers(layers).forEach((lay) => {
                         if (lay.visible && !lay.Name.includes('teeb:camada')) {
                             newLegends.push(lay);
                         }
@@ -246,6 +246,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
     handleLayers(layers: Layer[]): void {
+        this.fuseLoadingService.show();
         if(Array.isArray(layers)){
             if (this.map) {
                 layers.forEach((lay: Layer) => {
@@ -253,11 +254,12 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             }
         }
+        this.fuseLoadingService.hide();
     }
     addFeatureToMap(feature: Feature, fromSearch: boolean = false): void{
         if(this.featureLayer){
             this.removeFeatureFromMap();
-            this.dataSource = null;
+            this.dataSource.data = [];
             this.hidePopup();
         }
         this.feature = this.jsonToFeature(feature);
@@ -330,7 +332,11 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     ngAfterViewInit(): void {
         this.setDimensions();
-        this.subscriptions();
+        setTimeout(() => {
+            this.layersService.updateLayerVisibility(environment.defaultLayer, true);
+        }, 1000);
+        this.dataSource = new MatTableDataSource<any>([]);
+        this.cdr.detectChanges();
     }
     onMapReady(map: Map): void {
         this.map = map;
@@ -354,11 +360,12 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         this.overlay = new Overlay({
             element: document.getElementById('overlay'),
-            positioning: 'bottom-center',
+            positioning: 'top-right',
             stopEvent: true,
             offset: [0, -10]
         });
         this.map.addOverlay(this.overlay);
+        this.subscriptions();
     }
     showPopup(evt, feature): void{
         this.addFeatureToMap(feature);
@@ -389,9 +396,10 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                 description: theme['description']
             };
         });
-        this.dataSource = new MatTableDataSource<any>(dados);
+        this.dataSource.data = dados;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.matSort;
+        this.cdr.detectChanges();
     }
     getThemes(lang: string = 'pt'): void {
         this.fuseLoadingService.show();
@@ -401,10 +409,10 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
                 next: (translation) => {
                     this.themes = Object.entries(translation['variaveis_camadas_vetoriais'])
                         .map((item): Theme => ({
-                            id: item[0],
-                            label: item[1]['label'],
-                            description: item[1]['descricao']
-                        }));
+                                id: item[0],
+                                label: item[1]['label'],
+                                description: item[1]['descricao']
+                            }));
                     this.themes.sort((a, b) => a.label.localeCompare(b.label));
                     this.fuseLoadingService.hide();
                 }, error: () => this.fuseLoadingService.hide()
@@ -459,8 +467,12 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'TITULO': propertyObject.SIGLA_UF ? `${propertyObject.TITULO} - ${propertyObject.SIGLA_UF}` : propertyObject.TITULO,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'AREA_KM2': propertyObject.AREA_KM2 ? propertyObject.AREA_KM2 : null
+            'AREA_KM2': propertyObject.AREA_KM2 ? propertyObject.AREA_KM2 : null,
         };
+        if (!result['AREA_KM2']){
+            result['AREA_KM2'] = propertyObject.AREA_HA * 0.01;
+        }
+        console.log(propertyObject, keywordLists);
         keywordLists.forEach((keyword) => {
             if (propertyObject.hasOwnProperty(keyword)) {
                 // Add the matching property name and its value to the result object.

@@ -4,6 +4,7 @@ import {catchError, map, Observable, of, ReplaySubject, take} from 'rxjs';
 import WMSCapabilities from 'ol/format/WMSCapabilities';
 import {environment} from '../../../environments/environment';
 import {Layer} from '../interfaces';
+import {flattenLayers} from "../utils/layer.util";
 
 @Injectable({
     providedIn: 'root'
@@ -60,7 +61,6 @@ export class LayersService {
                 lay['visible'] = false;
                 return lay;
             });
-            layers[0]['visible'] = true;
         }
         return layers;
     }
@@ -80,13 +80,20 @@ export class LayersService {
             }
         });
     }
+    updateVisibilityByName(items: Layer[], name, visible): void {
+        items.forEach((item) => {
+            if (item.Name === name) {
+                item['visible'] = visible;
+            }
+            if (item.Layer && item.Layer.length > 0) {
+                this.updateVisibilityByName(item.Layer, name, visible);
+            }
+        });
+    }
     updateLayerVisibility(name: string, visible: boolean): void {
         this._layers.pipe(take(1)).subscribe((layers) => {
-            const index = layers.findIndex(limit => limit.Name === name);
-            if (index !== -1) {
-                layers[index]['visible'] = visible;
-                this._layers.next(layers);
-            }
+            this.updateVisibilityByName(layers, name, visible);
+            this._layers.next(layers);
         });
     }
 }

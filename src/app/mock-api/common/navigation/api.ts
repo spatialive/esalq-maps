@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FuseNavigationItem } from '@fuse/components/navigation';
 import { FuseMockApiService } from '@fuse/lib/mock-api';
-import {LayersService} from '../../../shared/services/layers.service';
-import {take} from "rxjs";
+import {LayersService} from '../../../shared';
+import {take} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -50,18 +50,7 @@ export class NavigationMockApi
                         if (Array.isArray(layers)) {
                             layers = layers.filter(l => !l.Name.includes('teeb:camada'));
                             layers.forEach((lay) => {
-                                const navigationItem: FuseNavigationItem = {
-                                    active: false,
-                                    id: lay.Name,
-                                    title: lay.Title.toUpperCase(),
-                                    type: 'basic',
-                                    icon: 'mat_solid:layers',
-                                    function: (item: FuseNavigationItem): void => {
-                                        item.active = !item.active;
-                                        item.badge = item.active ? {icon: 'heroicons_outline:check'} : null;
-                                        this.layersService.updateLayerVisibility(item.id, item.active);
-                                    }
-                                };
+                                const navigationItem: FuseNavigationItem = this.createNavigationItem(lay);
                                 this._compactNavigation.push(navigationItem);
                                 this._futuristicNavigation.push(navigationItem);
                                 this._defaultNavigation.push(navigationItem);
@@ -81,5 +70,28 @@ export class NavigationMockApi
                     }
                 ];
             });
+    }
+    createNavigationItem(lay): FuseNavigationItem {
+        const navigationItem: FuseNavigationItem = {
+            active: false,
+            id: lay.Name,
+            title: lay.Title.toUpperCase(),
+            type: lay.Layer && Array.isArray(lay.Layer) ? 'collapsable' : 'basic',
+            icon: lay.Layer && Array.isArray(lay.Layer) ? 'mat_solid:list' : 'mat_solid:layers',
+        };
+
+        if (navigationItem.type !== 'collapsable') {
+            navigationItem.function = (item): void => {
+                item.active = !item.active;
+                item.badge = item.active ? { icon: 'heroicons_outline:check' } : null;
+                this.layersService.updateLayerVisibility(item.id, item.active);
+            };
+        }
+        // Recursively add children if the 'Layer' property exists
+        if (lay.Layer && Array.isArray(lay.Layer)) {
+            navigationItem.children = lay.Layer.map(childLayer => this.createNavigationItem(childLayer));
+        }
+
+        return navigationItem;
     }
 }

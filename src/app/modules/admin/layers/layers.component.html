@@ -65,14 +65,14 @@
                 <mat-toolbar-row class="flex flex-col md:flex-row justify-between items-center">
                     <div class="flex items-center justify-between">
                         <button class="ml-4 mr-2" mat-raised-button color="accent" [matTooltip]="'Exportar XLSX'" (click)="toXLS()">
-                            <mat-icon>table_view</mat-icon> XLSX
+                            <mat-icon [svgIcon]="'table_view'"></mat-icon> XLSX
                         </button>
 
                         <button class="mr-2" mat-raised-button color="primary" [matTooltip]="'Exportar JSON'" (click)="toJSON()">
-                            <mat-icon>description</mat-icon> JSON
+                            <mat-icon [svgIcon]="'description'"></mat-icon> JSON
                         </button>
                         <button mat-raised-button color="warn" [matTooltip]="'Exportar CSV'" (click)="toCSV()">
-                            <mat-icon>grid_on</mat-icon> CSV
+                            <mat-icon [svgIcon]="'grid_on'"></mat-icon> CSV
                         </button>
                     </div>
                 </mat-toolbar-row>

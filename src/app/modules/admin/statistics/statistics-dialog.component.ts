@@ -18,7 +18,7 @@ import {
     StatesService,
     Theme
 } from '../../../shared';
-import {of, Subject, switchMap, takeUntil} from 'rxjs';
+import {of, Subject, switchMap, take, takeUntil} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl} from '@angular/forms';
 import {statisticsModules} from './statistics-modules';
@@ -122,7 +122,8 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                         default:
                             return of([]);
                     }
-                })
+                }),
+                take(1)
             )
             .subscribe({
                 next: (dados) => {
@@ -240,5 +241,6 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
 
     close(): void {
         this.dialogRef.close();
+        this.ngOnDestroy();
     }
 }

@@ -5,6 +5,7 @@ export interface Layer {
     KeywordList?: string[];
     BoundingBox?: BoundingBox[];
     Style?: Style[];
+    Layer?: Layer[];
     queryable?: boolean;
     opaque?: boolean;
     noSubsets?: boolean;
