@@ -5,7 +5,7 @@
 export const environment = {
     production: false,
     geoserverUrl: '/geoservico',
-    langUrl: 'https://raw.githubusercontent.com/spatialive/esalq-maps/main/src',
+    langUrl: '.',
     defaultLayer: 'teeb:pa_br_pastagens_s1_sirgas_gpp_100m_2030'
 };
 

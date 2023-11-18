@@ -139,6 +139,6 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
             width: '98%',
             height: '90%',
             data: {title: 'Dados tabulares'},
-        });
+        }).afterClosed().subscribe(() => {console.log('Statistics closed')});
     }
 }

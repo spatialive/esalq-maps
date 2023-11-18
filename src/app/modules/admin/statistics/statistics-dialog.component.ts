@@ -1,4 +1,6 @@
 import {
+    AfterViewInit,
+    ChangeDetectorRef,
     Component,
     CUSTOM_ELEMENTS_SCHEMA,
     Inject,
@@ -9,14 +11,15 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {
-    BiomesService,
-    CountryService, exportToCSV, exportToJSON, exportToXLS,
+    exportToCSV,
+    exportToJSON,
+    exportToXLS,
     Feature,
+    GlobalDataService,
     Layer,
     LimitsService,
-    MunicipalitiesService,
-    StatesService,
-    Theme
+    Theme,
+    WfsService
 } from '../../../shared';
 import {of, Subject, switchMap, take, takeUntil} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -29,7 +32,6 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
-import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'statistics-dialog',
@@ -42,9 +44,10 @@ import * as XLSX from 'xlsx';
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
-export class StatisticsDialogComponent implements OnInit, OnDestroy {
-    @ViewChild('paginator') paginator!: MatPaginator;
-    @ViewChild(MatSort) matSort!: MatSort;
+export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+    // @ViewChild('paginator') paginator!: MatPaginator;
+    @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+    @ViewChild(MatSort, { static: true }) matSort!: MatSort;
     currentLimit: Layer;
     themes: Theme[] = [];
     themesTable: Theme[] = [];
@@ -76,18 +79,18 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
     constructor(
         public dialogRef: MatDialogRef<StatisticsDialogComponent>,
         private readonly limitsService: LimitsService,
-        private readonly countryService: CountryService,
-        private readonly biomesService: BiomesService,
-        private readonly statesService: StatesService,
-        private readonly municipalitiesService: MunicipalitiesService,
+        private readonly wfsService: WfsService,
+        readonly globalDataService: GlobalDataService,
         private readonly translocoService: TranslocoService,
         private readonly _http: HttpClient,
         private fuseLoadingService: FuseLoadingService,
+        private changeDetectorRef: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.themes = [];
         this.states = [];
         this.dados = [];
+        this.dataSource = new MatTableDataSource<any>();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -111,24 +114,31 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                 switchMap((layers) => {
                     this.currentLimit = layers.find(l => l.visible);
                     switch (this.currentLimit.Name) {
-                        case 'teeb:camada_estados':
-                            return this.statesService.states$;
-                        case 'teeb:camada_br':
-                            return this.countryService.country$;
-                        case 'teeb:camada_biomas':
-                            return this.biomesService.biomes$;
-                        case 'teeb:camada_municipios':
-                            return this.municipalitiesService.municipalities$;
+                        case this.globalDataService.mapLayerNames$.estados:
+                            return this.wfsService.states$;
+                        case this.globalDataService.mapLayerNames$.brasil:
+                            return this.wfsService.country$;
+                        case this.globalDataService.mapLayerNames$.biomas:
+                            return this.wfsService.biomes$;
+                        case this.globalDataService.mapLayerNames$.municipios:
+                            return this.wfsService.municipalities$;
+                        case this.globalDataService.mapLayerNames$.frentesDesmatamento:
+                            return this.wfsService.frentesDesmatamento$;
                         default:
                             return of([]);
                     }
                 }),
                 take(1)
             )
+            .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (dados) => {
                     this.dados = dados;
-                    this.fillTable();
+
+                    console.log(this.dados);
+
+                    // this.dataSource.data = this.dados.map(mun => mun.properties);
+                    // this.fillTable();
                 }
             });
         this.translocoService.langChanges$
@@ -138,7 +148,7 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                     this.getThemes(lang);
                 }
             });
-        this.statesService.states$
+        this.wfsService.states$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe({
                 next: (states) => {
@@ -147,18 +157,34 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
 
                 }
             });
-        this.themesSeleted.valueChanges.subscribe({
-            next: () => {
-                this.fillTable();
-            }
-        });
-        this.statesSeleted.valueChanges.subscribe({
-            next: (value) => {
-                this.filterData(value.map(item => item.properties['SIGLA_UF']));
-            }
-        });
+        this.themesSeleted.valueChanges
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: () => {
+                    this.fillTable();
+                }
+            });
+        this.statesSeleted.valueChanges
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe({
+                next: (value) => {
+                    this.filterData(value.map(item => item.properties['SIGLA_UF']));
+                }
+            });
         this.getThemes();
     }
+
+    ngAfterViewInit() {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.matSort;
+
+        this.dataSource.data = this.dados.map(mun => mun.properties);
+        this.fillTable();
+        // The important part:
+        this.changeDetectorRef.detectChanges();
+
+    }
+
     exportToXLS(): void {
         exportToXLS(this.dataSource, this.themes, this.currentLimit.Name);
     }
@@ -173,7 +199,7 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
         this.fuseLoadingService.show();
         this.themesTable = [...this.themesFixed, ...this.themesSeleted.value];
         this.displayedColumns = [...this.themesFixed.map(item => item.id), ...this.themesSeleted.value.map(theme => theme.id)];
-        this.dataSource = new MatTableDataSource<any>(this.dados.map(mun => mun.properties));
+
         if(this.currentLimit.Name.includes('municipios')){
             // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             this.dataSource.filterPredicate = (data: any, filter: string) => {
@@ -181,13 +207,21 @@ export class StatisticsDialogComponent implements OnInit, OnDestroy {
                 const dataValue = data['SIGLA_UF'] ? data['SIGLA_UF'].toString().toLowerCase() : '';
                 return filterArray.some(filterItem => dataValue.includes(filterItem.toLowerCase()));
             };
+        } else if(this.currentLimit.Name.includes('bioma')){
+            this.displayedColumns = this.displayedColumns.filter(column => !column.includes('SIGLA_UF'));
         }
 
         setTimeout(() => {
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.matSort;
+            // this.dataSource.paginator = this.paginator;
+            // this.dataSource.sort = this.matSort;
             this.fuseLoadingService.hide();
+
         }, 100);
+    }
+
+    private logLoadTime(startTime: number, endTime: number): void {
+        const loadTime = startTime - endTime;
+        console.log(`Load time: ${loadTime.toFixed(2)} ms`);
     }
 
     filterData(value: string[]): void {

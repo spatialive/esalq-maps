@@ -10,9 +10,13 @@
     "search_placeholder": "Search ...",
     "extent_lable": "Fit to extent",
     "variaveis_camadas_vetoriais": {
+        "AREA_HA": {
+            "label": "Area (HA)",
+            "descricao": "Area of the selected region in acres."
+        },
         "AREA_KM2": {
-            "label": "Area (km2)",
-            "descricao": "Area of the selected region in square kilometers."
+            "label": "Area (KM2)",
+            "descricao": "Area of the selected region in square kilometers.."
         },
         "BAU_AGR": {
             "label": "Agriculture (ha) - (baseline)",

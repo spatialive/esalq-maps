@@ -10,9 +10,13 @@
     "search_placeholder": "Pesquisar ...",
     "extent_lable": "Adaptar à extensão",
     "variaveis_camadas_vetoriais": {
+        "AREA_HA": {
+            "label": "Área (ha)",
+            "descricao": "Área da região selecionada em hectares."
+        },
         "AREA_KM2": {
-            "label": "Área (km2)",
-            "descricao": "Área da região selecionada em quilometros quadrados."
+            "label": "Área (KM2)",
+            "descricao": "Área da região selecionada em quilômetros quadrados."
         },
         "BAU_AGR": {
             "label": "Agricultura (ha) - (linha de base)",
@@ -106,6 +110,10 @@
             "label": "Vegetação nativa mantida 2020-2030 (ha) - Cen. 1",
             "descricao": "Área de vegetação nativa mantida entre 2020 e 2030 no cenário 1"
         },
+        "S1_ERO": {
+            "label": "Variação (%) entre as taxas de erosão - Cen. 1",
+            "descricao": "Variação percentual entre as taxas de erosão na linha de base e no cenário 1"
+        },
         "S2_DESM": {
             "label": "Desmatamento 2020-2030 (ha) - Cen. 2",
             "descricao": "Área de desmatamento entre 2020 e 2030 no cenário 2"
@@ -117,6 +125,10 @@
         "S2_VNM": {
             "label": "Vegetação nativa mantida 2020-2030 (ha) - Cen. 2",
             "descricao": "Área de vegetação nativa mantida entre 2020 e 2030 no cenário 2"
+        },
+        "S2_ERO": {
+            "label": "Variação (%) entre as taxas de erosão - Cen. 2",
+            "descricao": "Variação percentual entre as taxas de erosão na linha de base e no cenário 2"
         }
     }
 }
