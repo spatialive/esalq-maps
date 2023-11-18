@@ -14,6 +14,10 @@
             "label": "Área (ha)",
             "descricao": "Área da região selecionada em hectares."
         },
+        "AREA_KM2": {
+            "label": "Área (KM2)",
+            "descricao": "Área da região selecionada em quilômetros quadrados."
+        },
         "BAU_AGR": {
             "label": "Agricultura (ha) - (linha de base)",
             "descricao": "Área de agricultura no cenário BAU (linha de base)"
