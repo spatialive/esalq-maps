@@ -16,14 +16,16 @@
     position: absolute !important;
     bottom: 30px;
     right: 10px;
-    width: 280px;
-    height: 280px;
+    min-width: 320px;
+    max-width: 350px;
+    max-height: 400px;
     overflow-x: auto;
     background: white;
     border-radius: 5px;
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 50%);
     .legend-img{
-        max-width: 60%;
+        width: 100%;
+        //max-width: 60%;
     }
 }
 

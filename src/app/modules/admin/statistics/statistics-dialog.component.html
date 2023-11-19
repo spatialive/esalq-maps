@@ -43,15 +43,15 @@
         <mat-toolbar-row class="flex flex-col md:flex-row justify-between items-center">
             <div class="flex mb-2 md:mb-0">
                 <button class="mr-2" mat-raised-button color="accent" [matTooltip]="'Exportar XLSX'" (click)="exportToXLS()">
-                    <mat-icon>table_view</mat-icon>
+                    <mat-icon [svgIcon]="'table_view'"></mat-icon>
                 </button>
 
                 <button class="mr-2" mat-raised-button color="primary" [matTooltip]="'Exportar JSON'" (click)="exportToJSON()">
-                    <mat-icon>description</mat-icon>
+                    <mat-icon [svgIcon]="'description'"></mat-icon>
                 </button>
 
                 <button mat-raised-button color="warn" [matTooltip]="'Exportar CSV'" (click)="exportToCSV()">
-                    <mat-icon>grid_on</mat-icon>
+                    <mat-icon [svgIcon]="'grid_on'"></mat-icon>
                 </button>
             </div>
             <mat-paginator #paginator [pageSize]="25" [pageSizeOptions]="[2, 5, 10, 25, 100]"></mat-paginator>

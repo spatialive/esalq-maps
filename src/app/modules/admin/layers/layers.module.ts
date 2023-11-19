@@ -21,6 +21,7 @@ import {SharedModule} from '../../../shared/shared.module';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatExpansionModule} from "@angular/material/expansion";
 
 const datasetRoutes: Route[] = [
     {
@@ -53,7 +54,8 @@ const datasetRoutes: Route[] = [
         SharedModule,
         MatPaginatorModule,
         MatToolbarModule,
-        DragDropModule
+        DragDropModule,
+        MatExpansionModule
     ],
     exports: [
         LayersComponent

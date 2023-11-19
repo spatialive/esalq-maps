@@ -20,6 +20,7 @@ import {LayersService} from "../../../../shared";
 export class ClassyLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
+    toggle: boolean = false;
     navigation: Navigation;
     user: User;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -131,6 +132,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         {
             // Toggle the opened status
             navigation.toggle();
+            this.toggle = !this.toggle;
         }
     }
 

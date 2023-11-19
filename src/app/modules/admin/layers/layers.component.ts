@@ -44,7 +44,9 @@ import {FuseLoadingService} from '../../../../@fuse/services/loading';
 import {HttpClient} from '@angular/common/http';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
-import {flattenLayers} from "../../../shared/utils/layer.util";
+import {flattenLayers} from '../../../shared/utils/layer.util';
+import {CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray} from '@angular/cdk/drag-drop';
+import BaseLayer from "ol/layer/Base";
 
 @Component({
     selector: 'layers',
@@ -510,6 +512,26 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             dataProjection: 'EPSG:4674',
             featureProjection: 'EPSG:3857'
         });
+    }
+
+    trackByFn(index: number, item: Layer): any
+    {
+        return item.Name || index;
+    }
+    adjustZIndex(): void {
+        const first = this.map.getLayers().getArray().map(layer => layer.getZIndex()).filter(item => !isNaN(item));
+        const max = Math.max(...first);
+        const total = this.legends.length;
+        this.legends.forEach((lay: Layer, index: number) => {
+            const layer: BaseLayer = this.map.getLayers().getArray().find(l => l.get('name') === lay.Name);
+            if (layer) {
+                layer.setZIndex(total - Number(index) + max);
+            }
+        });
+    }
+    drop(event: CdkDragDrop<string[]>): void {
+        moveItemInArray(this.legends, event.previousIndex, event.currentIndex);
+        this.adjustZIndex();
     }
     ngOnDestroy(): void {
         this.unsubscribeAll.next(null);

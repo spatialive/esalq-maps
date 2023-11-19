@@ -11,15 +11,22 @@
             <ol-control class="mobileHide" control="FullScreen"></ol-control>
             <ol-control class="mobileHide" control="scaleline"></ol-control>
             <ol-layer *ngFor="let layer of layers" [layer]="layer"></ol-layer>
-            <div *ngIf="legends.length > 0" class="legend flex flex-col p-2">
-                <div class="text-md text-center w-full font-bold mt-2 mb-2">Legenda(s)</div>
-                <span class="mat-elevation-z2" *ngFor="let legend of legends">
-                    <div class="flex flex-col p-1 ">
-                        <div class="text-md text-center w-full font-bold mt-2 mb-2">{{legend.Title}}</div>
-                        <img class="legend-img" [src]="legend.Style[0].LegendURL[0].OnlineResource" [alt]="legend.Title">
-                    </div>
-                </span>
-            </div>
+            <mat-accordion  *ngIf="legends.length > 0"  class="legend drag-list">
+                <mat-expansion-panel [expanded]="legends.length > 0" cdkDropList (cdkDropListDropped)="drop($event)">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Legenda(s)
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <span class="drag-box mat-elevation-z2" *ngFor="let legend of legends; trackBy trackByFn" cdkDrag>
+                            <div class="flex flex-col p-2">
+                                <div class="drag-custom-placeholder" *cdkDragPlaceholder></div>
+                                <div class="text-md text-center w-full font-bold mt-2 mb-2 flex justify-between"><mat-icon [svgIcon]="'mat_solid:drag_indicator'"></mat-icon> {{legend.Title}}</div>
+                                <img class="legend-img" [src]="legend.Style[0].LegendURL[0].OnlineResource" [alt]="legend.Title">
+                            </div>
+                        </span>
+                </mat-expansion-panel>
+            </mat-accordion>
         </ol-map>
     </div>
 </div>
