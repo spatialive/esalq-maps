@@ -2,6 +2,8 @@
 
 Bem-vindo à TEEB - Plataforma de Dados Geográficos. Este projeto se dedica a apresentar dados geográficos relacionados a agricultura, pastagem, vegetação nativa, desmatamento e regeneração da vegetação de 2020 a 2030.
 
+
+
 ![Imagem Destaque](URL_DA_IMAGEM_DE_DESTAQUE)
 
 ## Recursos
