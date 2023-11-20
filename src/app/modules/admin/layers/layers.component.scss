@@ -9,8 +9,10 @@
     position: absolute;
     right: 15px;
     top: 15px;
-    height: 500px;
-    width: 400px;
+    height: 300px;
+    width: 500px;
+    overflow: auto;
+    max-height: 450px;
 }
 
 .limits{

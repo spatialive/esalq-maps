@@ -441,7 +441,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         if(this.activeLimit.Name.includes('camada_br')){
             const properties = this.mapperLimits[foundKey][0].properties;
             this.displayFeatureInfo = Object.assign(this.displayFeatureInfo, this.findMatchingProperties(this.activeLayers.flatMap(layer => layer.KeywordList), properties));
-            this.wfsService.getBrasil().subscribe({
+            this.wfsService.getFeatureBrasil().subscribe({
                 next: (feature) => {
                     this.showPopup(evt, feature);
                 }

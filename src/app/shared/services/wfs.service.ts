@@ -4,7 +4,7 @@ import {catchError, map, Observable, of, ReplaySubject, switchMap, throwError} f
 import {environment} from '../../../environments/environment';
 import {Coordinate} from "ol/coordinate";
 import {fixEncoding} from "../utils";
-import {CqlFilterCriteria, Feature} from "../interfaces";
+import {CqlFilterCriteria, Feature, FeatureCollection} from "../interfaces";
 import {GlobalDataService} from "./globaldata.service";
 
 @Injectable({
@@ -173,8 +173,7 @@ export class WfsService {
     getBrasil(properties?: string[]): Observable<any[]> {
         const layerName = this.globalDataService.mapLayerNames$['brasil'];
 
-        const propertiesObservable = properties ? of(properties)
-            : this.fetchLayerPropertyNames(layerName);
+        const propertiesObservable  = this.fetchLayerPropertyNames(layerName);
 
         return propertiesObservable
             .pipe(
@@ -187,7 +186,8 @@ export class WfsService {
                             return feat;
                         });
                         this.country = response.features;
-                        return response.features.map(feature => feature.properties);
+                        // return response.features.map(feature => feature.properties);
+                        return response.features[0];
                     } else {
                         console.error('Features array not found or not an array in response', response);
                         return [];
@@ -199,7 +199,23 @@ export class WfsService {
                 })
             );
     }
-
+    getFeatureBrasil(): Observable<Feature> {
+        const layerName = this.globalDataService.mapLayerNames$['brasil'];
+        const queryParams = {
+            service: 'WFS',
+            version: '1.0.0',
+            request: 'GetFeature',
+            typeName: layerName,
+            maxFeatures: 1,
+            format_options: 'CHARSET:UTF-8',
+            outputFormat: 'application/json'
+        };
+        return this._http.get(this.createUrl(queryParams), { responseType: 'json' })
+            .pipe(
+                map((collection: FeatureCollection) => collection.features[0]),
+                catchError(() => of(null))
+            );
+    }
     getFrentesDesmatamento(properties?: string[]): Observable<any[]> {
         const layerName = this.globalDataService.mapLayerNames$['frentesDesmatamento'];
 
