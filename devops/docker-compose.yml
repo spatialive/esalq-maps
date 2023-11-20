@@ -1,0 +1,8 @@
+version: '3'
+services:
+    rpd-webmap:
+        build:
+            context: ../
+            dockerfile: ./devops/Dockerfile
+        ports:
+            - "8081:80"

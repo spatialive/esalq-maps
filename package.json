@@ -1,7 +1,7 @@
 {
-    "name": "teeb-webmap",
+    "name": "rpd-webmap",
     "version": "1.0.0",
-    "description": "TEEB - Maps",
+    "description": "Impacto da RPD",
     "author": "Tharles de Sousa Andrade e Luiz Mário",
     "license": "....",
     "private": true,

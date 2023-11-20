@@ -21,10 +21,10 @@ jobs:
             - name: Install dependencies and build
               run: |
                   npm ci
-                  npm run build -- --configuration production --base-href "/esalq-maps/"
+                  npm run build -- --configuration production --base-href "/rpd/"
 
             - name: Deploy to GitHub Pages
               uses: JamesIves/github-pages-deploy-action@4.1.5
               with:
                   branch: gh-pages
-                  folder: dist/teeb-webmap
+                  folder: dist/rpd-webmap

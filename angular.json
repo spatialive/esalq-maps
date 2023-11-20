@@ -9,7 +9,7 @@
     },
     "newProjectRoot": "projects",
     "projects": {
-        "teeb-webmap": {
+        "rpd-webmap": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -23,7 +23,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/teeb-webmap",
+                        "outputPath": "dist/rpd-webmap",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
@@ -112,10 +112,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "browserTarget": "teeb-webmap:build:production"
+                            "browserTarget": "rpd-webmap:build:production"
                         },
                         "development": {
-                            "browserTarget": "teeb-webmap:build:development",
+                            "browserTarget": "rpd-webmap:build:development",
                             "proxyConfig": "src/proxy.conf.js"
                         }
                     },
@@ -124,7 +124,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "teeb-webmap:build"
+                        "browserTarget": "rpd-webmap:build"
                     }
                 },
                 "test": {
