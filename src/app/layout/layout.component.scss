@@ -33,6 +33,7 @@ layout {
 .logos{
     display: flex;
     margin-top: 5px;
+    align-items: center;
     a{
         filter: grayscale(100%);
         &:hover{

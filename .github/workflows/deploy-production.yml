@@ -23,15 +23,6 @@ jobs:
             - name: Build
               run: npm run build -- --configuration production
 
-            - id: 'plataforma-teeb-pnuma-ssh'
-              name: Impacto da RPD
-              uses: 'google-github-actions/ssh-compute@v0'
-              with:
-                  instance_name: 'plataforma-teeb-pnuma'
-                  zone: 'us-central1-a'
-                  ssh_private_key: '${{ secrets.DEPLOY_KEY }}'
-                  command: 'echo Hello world'
-
             - name: Deploy
               uses: appleboy/scp-action@master
               with:

@@ -13,6 +13,11 @@ export const appRoutes: Route[] = [
         children: [
             {
                 path: '',
+                pathMatch: 'full',
+                loadChildren: () => import('app/modules/admin/layers/layers.module').then(m => m.LayersModule)
+            },
+            {
+                path: 'mapas',
                 loadChildren: () => import('app/modules/admin/layers/layers.module').then(m => m.LayersModule)
             },
             {

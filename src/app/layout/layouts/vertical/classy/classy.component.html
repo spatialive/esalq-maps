@@ -12,11 +12,11 @@
     <ng-container fuseVerticalNavigationContentHeader>
         <div class="flex items-center w-full p-4 pl-6">
             <!-- Logo -->
-            <div class="flex items-center justify-center cursor-pointer" [routerLink]="['/']" >
+            <div class="flex items-center justify-center cursor-pointer" [routerLink]="['/']">
                 <img
                     class="w-10 logo-brand"
                     src="assets/images/logo/logo.svg">
-                    <h2 class="ml-3"><b>Impacto da RPD</b></h2>
+                <h2 class="ml-3"><b>Impacto da RPD</b></h2>
             </div>
             <!-- Components -->
             <div class="flex items-center ml-auto">
@@ -29,7 +29,8 @@
 <div class="flex flex-col flex-auto w-full min-w-0">
 
     <!-- Header -->
-    <div class="relative flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
+    <div
+        class="relative flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
         <!-- Navigation toggle button -->
         <button
             mat-raised-button
@@ -43,10 +44,11 @@
             <button mat-raised-button
                     color="accent"
                     (click)="openStatisticsDialog()">
-                <mat-icon svgIcon="mat_outline:insert_chart"></mat-icon> Estatísticas
+                <mat-icon svgIcon="mat_outline:insert_chart"></mat-icon>
+                Estatísticas
             </button>
             <limits></limits>
-<!--            <languages></languages>-->
+            <!--            <languages></languages>-->
             <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
             <search [appearance]="'bar'"></search>
         </div>
@@ -58,21 +60,31 @@
     </div>
 
     <!-- Footer -->
-    <div class="relative flex flex-col flex-0 items-center justify-start w-full h-30 px-4 md:px-6 z-49 border-t bg-card dark:bg-transparent print:hidden">
+    <div
+        class="relative flex flex-col flex-0 items-center justify-start w-full h-30 px-4 md:px-6 z-49 border-t bg-card dark:bg-transparent print:hidden">
         <div class="logos">
-            <a href="https://www.unep.org/pt-br" target="_blank" title="ONU" >
+            <a href="https://www.unep.org/pt-br" target="_blank" title="ONU">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/1onu.png" class="logo-img" alt="ONU">
-            </a><a href="https://teebweb.org/" target="_blank" title="TEEB" >
+            </a>
+            <a href="https://teebweb.org/" target="_blank" title="TEEB">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/2teeb.png" class="logo-img" alt="TEEB">
-            </a><a href="https://www.esalq.usp.br/" target="_blank" title="ESALQ" >
+            </a>
+            <a href="https://www.gov.br/agricultura/pt-br" target="_blank" title="MAPA">
+                <img src="assets/images/logo/mapa.png" class="logo-img" alt="MAPA">
+            </a>
+            <a href="https://www.esalq.usp.br/" target="_blank" title="ESALQ">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/3esalq.png" class="logo-img" alt="ESALQ">
-            </a><a href="https://www.gppesalq.agr.br/" target="_blank" title="GPP" >
+            </a>
+            <a href="https://www.gppesalq.agr.br/" target="_blank" title="GPP">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/4gpp.png" class="logo-img" alt="GPP">
-            </a><a href="https://eesp.fgv.br/" target="_blank" title="FGV" >
+            </a>
+            <a href="https://eesp.fgv.br/" target="_blank" title="FGV">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/5fgv.png" class="logo-img" alt="FGV">
-            </a><a href="https://fealq.org.br/" target="_blank" title="Fealq" >
+            </a>
+            <a href="https://fealq.org.br/" target="_blank" title="Fealq">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/6fealq.png" class="logo-img" alt="Fealq">
-            </a><a href="https://european-union.europa.eu/index_pt" target="_blank" title="UE" >
+            </a>
+            <a href="https://european-union.europa.eu/index_pt" target="_blank" title="UE">
                 <img src="http://rdp.planetastuto.pt/wp-content/uploads/2023/10/7ue.png" class="logo-img" alt="UE">
             </a>
         </div>

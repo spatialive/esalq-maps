@@ -5,4 +5,4 @@ services:
             context: ../
             dockerfile: ./devops/Dockerfile
         ports:
-            - "8081:80"
+            - "80:80"
