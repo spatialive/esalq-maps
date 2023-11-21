@@ -48,16 +48,23 @@
                             "earcut"
                         ],
                         "assets": [
+                            "src/favicon.ico",
                             "src/favicon-16x16.png",
                             "src/favicon-32x32.png",
+                            "src/android-chrome-192x192.png",
+                            "src/android-chrome-512x512.png",
+                            "src/apple-touch-icon.png",
+                            "src/site.webmanifest",
+                            "src/favicon.ico",
+                            "src/favicon.ico",
+                            "src/favicon.ico",
                             "src/assets",
                             "src/styles",
                             {
                                 "glob": "_redirects",
                                 "input": "src",
                                 "output": "/"
-                            },
-                            "src/app/modules/admin/statistics/table.worker.js"
+                            }
                         ],
                         "stylePreprocessorOptions": {
                             "includePaths": [

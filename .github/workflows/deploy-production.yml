@@ -2,7 +2,7 @@ name: Impacto da RPD
 
 on:
     push:
-        branches: [ main ]  # Trigger on push to the main branch
+        branches: [ homolog ]  # Trigger on push to the main branch
 
 jobs:
     build-and-deploy:
