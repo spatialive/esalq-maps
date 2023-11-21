@@ -1,0 +1,45 @@
+name: Impacto da RPD
+
+on:
+    push:
+        branches: [ main ]  # Trigger on push to the main branch
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest  # Specifies the runner environment
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2  # Checks out your repository
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '16'  # Specify the Node.js version
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build
+              run: npm run build -- --configuration production
+
+            - name: Deploy
+              uses: appleboy/scp-action@master
+              with:
+                  host: ${{ secrets.DEPLOY_SERVER }}
+                  username: ${{ secrets.DEPLOY_USER }}
+                  key: ${{ secrets.DEPLOY_KEY }}
+                  port: 22
+                  source: "dist/rpd-webmap"
+                  target: ${{ secrets.DEPLOY_DIR }}
+
+            - name: Update permissions and Reload Nginx
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.DEPLOY_SERVER }}
+                  username: ${{ secrets.DEPLOY_USER }}
+                  key: ${{ secrets.DEPLOY_KEY }}
+                  script: |
+                      sudo chown -R www-data:www-data ${{ secrets.DEPLOY_DIR }}
+                      sudo chmod -R 755 ${{ secrets.DEPLOY_DIR }}
+                      sudo nginx -s reload
