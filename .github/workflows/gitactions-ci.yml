@@ -21,7 +21,7 @@ jobs:
               run: npm install
 
             - name: Build
-              run: npm run build -- --configuration production
+              run: npm run build -- --configuration production  --base-href "./"
 
             - name: Deploy
               uses: appleboy/scp-action@master
@@ -31,7 +31,7 @@ jobs:
                   key: ${{ secrets.DEPLOY_KEY }}
                   port: 22
                   source: "dist/rpd-webmap"
-                  target: ${{ secrets.DEPLOY_DIR }}
+                  target: ${{ secrets.DEPLOY_DIR_TEMP }}
 
             - name: Update permissions and Reload Nginx
               uses: appleboy/ssh-action@master
@@ -40,6 +40,7 @@ jobs:
                   username: ${{ secrets.DEPLOY_USER }}
                   key: ${{ secrets.DEPLOY_KEY }}
                   script: |
+                      sudo mv ${{ secrets.DEPLOY_DIR_TEMP }}/* ${{ secrets.DEPLOY_DIR }}
                       sudo chown -R www-data:www-data ${{ secrets.DEPLOY_DIR }}
                       sudo chmod -R 755 ${{ secrets.DEPLOY_DIR }}
                       sudo nginx -s reload
