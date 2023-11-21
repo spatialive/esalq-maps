@@ -26,7 +26,7 @@ jobs:
             - name: Add SSH key to known_hosts
               run: |
                 mkdir -p ~/.ssh
-                ssh-keyscan -t rsa $SERVER_KNOWN >> ~/.ssh/known_hosts  2>/dev/null
+                ssh-keyscan -t rsa ${{ secrets.DEPLOY_SERVER }} >> ~/.ssh/known_hosts  2>/dev/null
                 chmod 644 ~/.ssh/known_hosts
                 echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
