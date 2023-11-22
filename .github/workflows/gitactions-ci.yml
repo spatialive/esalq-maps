@@ -49,7 +49,8 @@ jobs:
                   username: ${{ secrets.DEPLOY_USER }}
                   key: ${{ secrets.DEPLOY_KEY }}
                   script: |
-                      sudo mv ${{ secrets.DEPLOY_DIR_TEMP }}/* ${{ secrets.DEPLOY_DIR }}
+                      sudo rm -r ${{ secrets.DEPLOY_DIR }}/*
+                      sudo cp -r ${{ secrets.DEPLOY_DIR_TEMP }}/dist/rpd-webmap/* ${{ secrets.DEPLOY_DIR }}
                       sudo chown -R www-data:www-data ${{ secrets.DEPLOY_DIR }}
                       sudo chmod -R 755 ${{ secrets.DEPLOY_DIR }}
                       sudo nginx -s reload
