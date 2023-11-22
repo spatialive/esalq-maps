@@ -3,6 +3,7 @@ import { FuseNavigationItem } from '@fuse/components/navigation';
 import { FuseMockApiService } from '@fuse/lib/mock-api';
 import {LayersService} from '../../../shared';
 import {take} from 'rxjs';
+import {GoogleAnalyticsService} from "../../../shared/services/google-analytics.service";
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +20,8 @@ export class NavigationMockApi
      */
     constructor(
         private readonly _fuseMockApiService: FuseMockApiService,
-        private readonly layersService: LayersService
+        private readonly layersService: LayersService,
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
     )
     {
         // Register Mock API handlers
@@ -85,6 +87,7 @@ export class NavigationMockApi
                 item.active = !item.active;
                 item.badge = item.active ? { icon: 'heroicons_outline:check' } : null;
                 this.layersService.updateLayerVisibility(item.id, item.active);
+                this.googleAnalyticsService.eventEmitter('visualizar-layer', 'Camada', lay.Title);
             };
         }
         // Recursively add children if the 'Layer' property exists

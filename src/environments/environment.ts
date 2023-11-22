@@ -6,7 +6,8 @@ export const environment = {
     production: false,
     geoserverUrl: '/geoservico',
     langUrl: '.',
-    defaultLayer: 'teeb:pa_br_pastagens_s1_sirgas_gpp_100m_2030'
+    defaultLayer: 'teeb:pa_br_pastagens_s1_sirgas_gpp_100m_2030',
+    gtag: ''
 };
 
 /*

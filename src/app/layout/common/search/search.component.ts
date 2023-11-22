@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 import { debounceTime, filter, map, Subject, takeUntil } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations/public-api';
-import {SearchMunicipalityState} from "../../../shared/states/search-municipality.state";
+import {SearchMunicipalityState} from '../../../shared/states/search-municipality.state';
+import {GoogleAnalyticsService} from '../../../shared/services/google-analytics.service';
 
 @Component({
     selector     : 'search',
@@ -33,7 +34,8 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy
         private _elementRef: ElementRef,
         private _httpClient: HttpClient,
         private _renderer2: Renderer2,
-        private readonly searchMunicipalityState: SearchMunicipalityState
+        private readonly searchMunicipalityState: SearchMunicipalityState,
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
     )
     {
     }
@@ -227,5 +229,6 @@ export class SearchComponent implements OnChanges, OnInit, OnDestroy
     optionSelected(evt): void{
         const mun = evt.option.value.split(' - ');
         this.searchMunicipalityState.codigo = mun[0];
+        this.googleAnalyticsService.eventEmitter('pesquisa', 'Municipio', mun[1]);
     }
 }

@@ -32,6 +32,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {FuseLoadingService} from '../../../../@fuse/services/loading';
+import {GoogleAnalyticsService} from '../../../shared/services/google-analytics.service';
 
 @Component({
     selector: 'statistics-dialog',
@@ -85,6 +86,7 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
         private readonly _http: HttpClient,
         private fuseLoadingService: FuseLoadingService,
         private changeDetectorRef: ChangeDetectorRef,
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.themes = [];
@@ -187,13 +189,16 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
 
     exportToXLS(): void {
         exportToXLS(this.dataSource, this.themes, this.currentLimit.Name);
+        this.googleAnalyticsService.eventEmitter('statistics-export', 'xls', this.currentLimit.Title);
     }
     exportToJSON(): void {
         exportToJSON(this.dataSource, this.currentLimit.Name);
+        this.googleAnalyticsService.eventEmitter('statistics-export', 'json', this.currentLimit.Title);
     }
 
     exportToCSV(): void {
         exportToCSV(this.dataSource, this.currentLimit.Name);
+        this.googleAnalyticsService.eventEmitter('statistics-export', 'csv', this.currentLimit.Title);
     }
     fillTable(): void {
         this.fuseLoadingService.show();
@@ -251,6 +256,9 @@ export class StatisticsDialogComponent implements OnInit, AfterViewInit, OnDestr
                         }));
                     this.themes.sort((a, b) => a.label.localeCompare(b.label));
                     this.fuseLoadingService.hide();
+                    this.themes.forEach((theme) => {
+                        this.googleAnalyticsService.eventEmitter('statistics', 'theme', theme.label);
+                    });
                 }, error: () => this.fuseLoadingService.hide()
             });
     }

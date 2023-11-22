@@ -47,6 +47,7 @@ import {MatSort} from '@angular/material/sort';
 import {flattenLayers} from '../../../shared/utils/layer.util';
 import {CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray} from '@angular/cdk/drag-drop';
 import BaseLayer from "ol/layer/Base";
+import {GoogleAnalyticsService} from "../../../shared/services/google-analytics.service";
 
 @Component({
     selector: 'layers',
@@ -94,6 +95,8 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly translocoService: TranslocoService,
         private readonly fuseMediaWatcherService: FuseMediaWatcherService,
         private readonly fuseLoadingService: FuseLoadingService,
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
+
     ) {
         this.layers = [];
     }
@@ -141,6 +144,7 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: (layers) => {
                     this.currentLimit = layers.find(l => l.visible);
+                    this.googleAnalyticsService.eventEmitter('visualizar-layer', 'Limite', this.currentLimit.Title);
                 }
             });
         this.layersService.layers$
@@ -379,16 +383,24 @@ export class LayersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.createInfoTable();
         const coordinates = evt.coordinate;
         this.overlay.setPosition(coordinates);
+        this.googleAnalyticsService.eventEmitter('click-map', 'point', this.currentLimit.Title, coordinates.toString());
+
     }
     toXLS(): void {
         exportToXLS(this.dataSource, null, normalize(this.displayFeatureInfo?.TITULO, true));
+        this.googleAnalyticsService.eventEmitter('click-map-export', 'xls', this.displayFeatureInfo?.TITULO);
+
     }
     toJSON(): void {
         exportToJSON(this.dataSource, normalize(this.displayFeatureInfo?.TITULO, true));
+        this.googleAnalyticsService.eventEmitter('click-map-export', 'json', this.displayFeatureInfo?.TITULO);
+
     }
 
     toCSV(): void {
         exportToCSV(this.dataSource, normalize(this.displayFeatureInfo?.TITULO, true));
+        this.googleAnalyticsService.eventEmitter('click-map-export', 'csv', this.displayFeatureInfo?.TITULO);
+
     }
     createInfoTable(): void {
         const info = {...this.displayFeatureInfo};
